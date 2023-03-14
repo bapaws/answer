@@ -8,6 +8,9 @@
 
 ## iOS App
 
+<a href="https://testflight.apple.com/join/HuwYNikH">
+	<img src="img/testflight.png" alt="" height=40>
+</a>
 <a href="https://itunes.apple.com/app/id6446219556">
 	<img src="img/app-store.svg" alt="">
 </a>
