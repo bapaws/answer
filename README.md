@@ -12,14 +12,15 @@
 	<img src="img/app-store.svg" alt="">
 </a>
 
-![screen-dark](img/screen-dark.png)![screen-light](img/screen-light.png)
+![ios-screen](img/ios-screen.png)
 
 ## Android App
 
-<a href="https://itunes.apple.com/app/id6446219556">
+<a href="https://play.google.com/store/apps/details?id=com.bapaws.answer">
 	<img src="img/google-play-badge.png" alt="" height=80>
 </a>
 
+![android-screen](img/android-screen.png)
 
 ## Roadmap
 
