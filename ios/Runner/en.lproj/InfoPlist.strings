@@ -1,0 +1,10 @@
+/* 
+  InfoPlist.strings
+  Runner
+
+  Created by 张敏超 on 2023/3/12.
+  
+*/
+
+"CFBundleDisplayName" = "Answer";
+"CFBundleName" = "Chat Answer";

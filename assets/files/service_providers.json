@@ -1,0 +1,34 @@
+[
+  {
+    "id": "open_ai_chat_gpt",
+    "name": "Chat GPT",
+    "avatar": "assets/images/open_ai_chat_gpt.svg",
+    "group_id": 0,
+    "official_url": "https://api.openai.com/v1/chat/completions",
+    "api_url": "",
+    "help": "Help",
+    "help_url": "Help",
+    "tokens": [
+      {
+        "name": "API Key",
+        "service_provider_id": "open_ai_chat_gpt"
+      }
+    ]
+  },
+  {
+    "id": "open_ai_chat_gpt_secret_api",
+    "name": "Chat GPT Secret API",
+    "avatar": "assets/images/open_ai_chat_gpt.svg",
+    "group_id": 0,
+    "official_url": "https://api.openai.com/v1/chat/completions",
+    "api_url": "https://chat.openai.com/chat",
+    "help": "Help",
+    "help_url": "Help",
+    "tokens": [
+      {
+        "name": "Session Token",
+        "service_provider_id": "open_ai_chat_gpt_secret_api"
+      }
+    ]
+  }
+]
