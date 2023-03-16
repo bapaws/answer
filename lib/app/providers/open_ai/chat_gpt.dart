@@ -67,7 +67,7 @@ class ChatGpt extends ServiceProvider {
       messages.add({'role': 'user', 'content': message.content!});
 
       final response = await AppHttp.post(
-        apiUrl!,
+        url!,
         data: {
           'model': 'gpt-3.5-turbo-0301',
           'messages': messages,

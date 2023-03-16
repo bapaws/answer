@@ -68,6 +68,7 @@ class AppTheme {
               ? const Color(0xFF181818)
               : const Color(0xFFCBCBCB),
         ),
+        toolbarTextStyle: textTheme.titleMedium,
       );
 
   BottomNavigationBarThemeData _getBottomNavigationBarTheme(

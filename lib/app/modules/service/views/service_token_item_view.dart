@@ -14,6 +14,7 @@ class ServiceTokenItemView extends StatelessWidget {
     required this.obscured,
     this.onSubmitted,
     required this.focusNode,
+    this.textInputAction,
   });
 
   final ServiceToken item;
@@ -23,6 +24,7 @@ class ServiceTokenItemView extends StatelessWidget {
   final VoidCallback onObscured;
   final bool obscured;
   final ValueChanged<String>? onSubmitted;
+  final TextInputAction? textInputAction;
 
   @override
   Widget build(BuildContext context) {
@@ -46,7 +48,7 @@ class ServiceTokenItemView extends StatelessWidget {
             hintText: 'type_your_tokens'.trParams({'name': item.name}),
           ),
           onSubmitted: onSubmitted,
-          textInputAction: TextInputAction.done,
+          textInputAction: textInputAction ?? TextInputAction.done,
         ),
       ),
       trailing: IconButton(

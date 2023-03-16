@@ -5,6 +5,7 @@ class EnvConfig {
   final String dbName;
   final bool shouldCollectCrashLog;
   final HttpOverrides? httpOverrides;
+  final String? openAIUrl;
   final String? openAIApiKey;
 
   EnvConfig({
@@ -12,6 +13,7 @@ class EnvConfig {
     required this.dbName,
     this.shouldCollectCrashLog = false,
     this.httpOverrides,
+    this.openAIUrl,
     this.openAIApiKey,
   });
 }

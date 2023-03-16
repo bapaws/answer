@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:answer/app/data/db/service_providers_dao.dart';
 import 'package:answer/app/data/db/service_tokens_dao.dart';
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -37,7 +37,7 @@ class AppDatabase {
       path,
       onCreate: instance._onCreate,
       onUpgrade: instance._onUpgrade,
-      version: 1,
+      version: 2,
     );
   }
 
@@ -47,5 +47,7 @@ class AppDatabase {
     ServiceTokensDao.onCreate(db);
   }
 
-  FutureOr<void> _onUpgrade(Database db, int oldVersion, int newVersion) {}
+  FutureOr<void> _onUpgrade(Database db, int oldVersion, int newVersion) {
+    ServiceProvidersDao.onUpgrade(db, oldVersion, newVersion);
+  }
 }

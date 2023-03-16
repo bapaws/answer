@@ -27,6 +27,8 @@ class AppTranslation extends Translations {
     'type_your_tokens': '请输入您的 @name',
     'must_type_tokens': '请先点击我的头像，输入您的 @tokens',
     'network_error': '网络出现了问题，请稍后重试~',
+    'save': '保存',
+    'reset': '重置',
   };
 
   static const Map<String, String> en_US = {
@@ -48,5 +50,7 @@ class AppTranslation extends Translations {
     'must_type_tokens': 'Please click on my avatar，type your @tokens',
     'network_error':
         'Oops! The network is unavailable. \n\nPlease try again later.',
+    'save': 'Save',
+    'reset': 'Reset',
   };
 }
