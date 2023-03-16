@@ -1,5 +1,5 @@
-import 'package:flutter/material.dart';
 import 'package:answer/app/views/app_cell.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
@@ -16,7 +16,24 @@ class ServiceView extends StatelessWidget with AppViewMixin<ServiceController> {
 
   @override
   PreferredSizeWidget? buildAppBar(BuildContext context) {
-    return AppBar();
+    return AppBar(
+      actions: controller.editing
+          ? [
+              TextButton(
+                onPressed: controller.onSaved,
+                child: Text(
+                  'save'.tr,
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+              ),
+            ]
+          : [
+              IconButton(
+                onPressed: controller.onEdited,
+                icon: const Icon(Icons.edit),
+              ),
+            ],
+    );
   }
 
   @override
@@ -24,6 +41,7 @@ class ServiceView extends StatelessWidget with AppViewMixin<ServiceController> {
     if (controller.provider == null) return Container();
 
     return ListView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       children: [
         ServiceInfo(
           provider: controller.provider!,
@@ -73,14 +91,17 @@ class ServiceView extends StatelessWidget with AppViewMixin<ServiceController> {
               child: TextField(
                 minLines: 1,
                 maxLines: 1,
-                enabled: true,
+                autocorrect: false,
+                enabled: controller.editing,
+                focusNode: controller.apiUrlFocusNode,
                 controller: controller.apiUrlTextEditingController,
                 style: Theme.of(context).textTheme.bodyMedium,
                 decoration: InputDecoration.collapsed(
                   hintText: 'type_your_tokens'.trParams({'name': 'API URL'}),
                 ),
-                // onSubmitted: onSubmitted,
-                textInputAction: TextInputAction.done,
+                textInputAction: controller.provider!.tokens.isEmpty
+                    ? TextInputAction.done
+                    : TextInputAction.next,
               ),
             ),
           ),
@@ -106,11 +127,11 @@ class ServiceView extends StatelessWidget with AppViewMixin<ServiceController> {
             onObscured: () {
               controller.onObscured(item);
             },
-            enabled: !controller.isObscure(item),
+            enabled: controller.editing,
             obscured: controller.isObscure(item),
-            onSubmitted: (value) {
-              controller.onTokenSubmitted(item, value);
-            },
+            textInputAction: item == controller.provider!.tokens.last
+                ? TextInputAction.done
+                : TextInputAction.next,
           ),
         const SizedBox(
           height: 8,

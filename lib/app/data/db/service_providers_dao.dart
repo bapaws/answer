@@ -22,9 +22,30 @@ class ServiceProvidersDao {
         group_id INTEGER,
         help TEXT,
         help_url TEXT,
+        hello TEXT,
         block INTEGER DEFAULT 0
       );
     ''');
+  }
+
+  static Future<void> onUpgrade(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) async {
+    // new version is 2
+    final hello = await db.rawQuery(
+      'select * from sqlite_master where name="$table" and sql like "%hello%";',
+    );
+    if (hello.isEmpty) {
+      await db.execute('ALTER TABLE $table ADD COLUMN hello TEXT;');
+    }
+    final desc = await db.rawQuery(
+      'select * from sqlite_master where name="$table" and sql like "%desc%";',
+    );
+    if (desc.isEmpty) {
+      await db.execute('ALTER TABLE $table ADD COLUMN desc TEXT;');
+    }
   }
 
   Future<List<Map<String, Object?>>> getAll({required int groupId}) async {

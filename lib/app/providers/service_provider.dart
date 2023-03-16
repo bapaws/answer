@@ -58,6 +58,8 @@ class ServiceProvider {
 
   Message? currentRequestMessage;
 
+  String? get url => editApiUrl ?? apiUrl;
+
   ServiceProvider({
     required this.id,
     required this.name,
@@ -91,7 +93,6 @@ class ServiceProvider {
     ServiceProviderCallback? onReceived,
     String? help,
     String? helpUrl,
-    String? welcome,
     String? hello,
     bool? block,
     String? editApiUrl,
@@ -148,7 +149,7 @@ class ServiceProvider {
         "help": help,
         "help_url": helpUrl,
         "hello": hello,
-        "editApiUrl": editApiUrl,
+        "edit_api_url": editApiUrl,
         "block": block ? 1 : 0,
         "tokens": List<dynamic>.from(tokens.map((x) => x.toJson())),
       };
