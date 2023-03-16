@@ -1,7 +1,7 @@
-# Chat Answer
+# 小答
 
 <div style="font-size: 1.5rem;">
-  <a href="./README.md">English</a> | <a href="./README.zh-Hans.md">中文</a>
+  <a href="./README.md">English</a> | <a href="./README.zh.md">中文</a>
 </div>
 </br>
 
@@ -9,7 +9,7 @@
     <img alt="GNU General Public License v3.0" src="https://img.shields.io/badge/license-GPL-blue?style=flat-square" />
 </a>
 
-Chat Answer is an open source app based on ChatGPT.
+小答是一款基于 ChatGPT 的开源客户端，由最新的 GPT-3.5-turbo AI 模型驱动。
 
 ## iOS App
 
@@ -32,19 +32,19 @@ Chat Answer is an open source app based on ChatGPT.
 
 ## Roadmap
 
-- [x] ChatGPT Service
-- [x] ChatGPT API Key & API URL setting
-- [x] Conversations local storage
-- [x] Add or delete conversations
-- [x] Messages local storage
-- [x] Support markdown
-- [x] Support code block highlight
-- [ ] Support conversation settings
-- [ ] Support delete message
-- [ ] App settings
-- [ ] Support for code replication
-- [ ] Support system message
-- [ ] Support more chat scenarios
+- [x] ChatGPT 服务
+- [x] ChatGPT API Key 和 API URL 设置
+- [x] 会话本地存储
+- [x] 新增及删除会话
+- [x] 消息本地存储
+- [x] 消息支持 Markdown
+- [x] 支持代码块高亮显示
+- [ ] 支持会话设置
+- [ ] 支持删除消息
+- [ ] 应用设置，支持语言、外观切换
+- [ ] 代码块的复制按钮
+- [ ] 支持系统消息
+- [ ] 支持更多聊天场景
 
 ## License
 
