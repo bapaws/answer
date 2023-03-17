@@ -25,6 +25,7 @@ import 'package:answer/app/core/app/app_hive_keys.dart';
 import 'package:answer/app/core/app/app_manager.dart';
 import 'package:answer/app/data/db/app_uuid.dart';
 import 'package:answer/app/data/models/conversation.dart';
+import 'package:answer/app/providers/service_request_parameter.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
@@ -52,6 +53,7 @@ class ServiceProvider {
   String? hello;
   bool block;
 
+  final List<ServiceParameter> parameters;
   final List<ServiceToken> tokens;
 
   final ServiceProviderCallback? onReceived;
@@ -72,6 +74,7 @@ class ServiceProvider {
     required this.helpUrl,
     required this.tokens,
     required this.hello,
+    required this.parameters,
     this.onReceived,
     this.block = false,
     this.editApiUrl,
@@ -97,6 +100,7 @@ class ServiceProvider {
     bool? block,
     String? editApiUrl,
     List<ServiceToken>? tokens,
+    List<ServiceParameter>? parameters,
     Map<String, dynamic>? map,
   }) =>
       ServiceProvider(
@@ -114,6 +118,7 @@ class ServiceProvider {
         hello: hello ?? map?['hello'] ?? this.hello,
         block: block ?? map?['block'] ?? this.block,
         tokens: tokens ?? this.tokens,
+        parameters: parameters ?? this.parameters,
       );
 
   factory ServiceProvider.fromJson(Map<String, dynamic> json) {
@@ -134,7 +139,17 @@ class ServiceProvider {
       tokens: json["tokens"] == null
           ? []
           : List<ServiceToken>.from(
-              json["tokens"]!.map((x) => ServiceToken.fromJson(x))),
+              json["tokens"]!.map(
+                (x) => ServiceToken.fromJson(x),
+              ),
+            ),
+      parameters: json["parameters"] == null
+          ? []
+          : List<ServiceParameter>.from(
+              json["parameters"]!.map(
+                (x) => ServiceParameter.fromJson(x),
+              ),
+            ),
     );
   }
 
@@ -152,6 +167,7 @@ class ServiceProvider {
         "edit_api_url": editApiUrl,
         "block": block ? 1 : 0,
         "tokens": List<dynamic>.from(tokens.map((x) => x.toJson())),
+        "parameters": List<dynamic>.from(parameters.map((x) => x.toJson())),
       };
 
   @mustCallSuper
@@ -187,7 +203,10 @@ class ServiceProvider {
   }
 
   @mustCallSuper
-  Future<bool> send({required Message message}) async {
+  Future<bool> send({
+    required Conversation conversation,
+    required Message message,
+  }) async {
     currentRequestMessage = message;
 
     final emptyValueTokens = tokens.where(

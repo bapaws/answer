@@ -37,7 +37,7 @@ class AppDatabase {
       path,
       onCreate: instance._onCreate,
       onUpgrade: instance._onUpgrade,
-      version: 2,
+      version: 3,
     );
   }
 
@@ -49,5 +49,6 @@ class AppDatabase {
 
   FutureOr<void> _onUpgrade(Database db, int oldVersion, int newVersion) {
     ServiceProvidersDao.onUpgrade(db, oldVersion, newVersion);
+    MessagesDao.onUpgrade(db, oldVersion, newVersion);
   }
 }

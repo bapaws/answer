@@ -11,6 +11,7 @@ class ChatTextItemView extends ChatBaseItemView {
     required super.message,
     required super.onRetried,
     required super.onAvatarClicked,
+    required super.onQuoted,
   }) : super();
 
   // @override

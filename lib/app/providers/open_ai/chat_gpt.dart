@@ -9,7 +9,9 @@ import 'package:answer/flavors/build_config.dart';
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 
+import '../../data/models/conversation.dart';
 import '../../data/models/service_token.dart';
+import '../service_request_parameter.dart';
 
 class ChatGpt extends ServiceProvider {
   final List<Map<String, String>> messages = [];
@@ -35,16 +37,48 @@ class ChatGpt extends ServiceProvider {
               serviceProviderId: 'open_ai_chat_gpt',
             ),
           ],
+          parameters: [
+            ServiceParameter(
+              key: 'model',
+              value: 'gpt-3.5-turbo-0301',
+              valueType: ServiceParameterValueType.choices,
+              choices: [
+                'gpt-3.5-turbo',
+                'gpt-3.5-turbo-0301',
+                '8K context',
+                '32K context',
+              ],
+            ),
+          ],
         );
 
   @override
-  Future<bool> send({required Message message}) async {
-    bool success = await super.send(message: message);
+  Future<bool> send({
+    required Conversation conversation,
+    required Message message,
+  }) async {
+    bool success = await super.send(
+      conversation: conversation,
+      message: message,
+    );
     if (!success) return false;
 
     try {
       final messages = <Map<String, String>>[];
-      if (message.conversationId != null) {
+      Message? quoteMessage = message.quoteMessage;
+      while (quoteMessage != null) {
+        messages.add({
+          'role': 'user',
+          'content': quoteMessage.requestMessage!.content!,
+        });
+        messages.add({
+          'role': 'assistant',
+          'content': quoteMessage.content!,
+        });
+        quoteMessage = quoteMessage.quoteMessage;
+      }
+
+      if (messages.isEmpty && message.conversationId != null) {
         final list = await AppDatabase.instance.messagesDao.get(
           conversationId: message.conversationId!,
           serviceId: id,
@@ -69,7 +103,7 @@ class ChatGpt extends ServiceProvider {
       final response = await AppHttp.post(
         url!,
         data: {
-          'model': 'gpt-3.5-turbo-0301',
+          for (final item in parameters) item.key: item.value,
           'messages': messages,
         },
         options: Options(headers: {

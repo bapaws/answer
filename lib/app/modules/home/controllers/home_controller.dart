@@ -1,14 +1,15 @@
 import 'dart:core';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:answer/app/core/app/app_controller_mixin.dart';
 import 'package:answer/app/core/app/app_hive_keys.dart';
 import 'package:answer/app/core/app/app_manager.dart';
+import 'package:answer/app/core/app/app_toast.dart';
 import 'package:answer/app/core/mixin/refresh_mixin.dart';
 import 'package:answer/app/data/db/app_database.dart';
 import 'package:answer/app/data/models/group.dart';
 import 'package:answer/app/providers/service_provider_manager.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 
 import '../../../data/db/app_uuid.dart';
@@ -32,6 +33,8 @@ class HomeController extends GetxController
       value: currentConversationIndex,
     );
   }
+
+  Message? currentQuotedMessage;
 
   final List<Conversation> conversations = [];
   final List<HomeDrawerController> homeDrawerControllers = [];
@@ -74,17 +77,12 @@ class HomeController extends GetxController
     super.onInit();
   }
 
-  @override
-  Future<void> onReady() async {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
   Future<void> onSubmitted(String value) async {
+    if (value.isEmpty) {
+      AppToast.show(msg: 'unable_send'.tr);
+      return;
+    }
+
     final message = Message(
       id: AppUuid.value,
       type: MessageType.text,
@@ -102,7 +100,10 @@ class HomeController extends GetxController
       conversation: currentConversation!,
     );
     for (final item in providers) {
-      item.send(message: message);
+      item.send(
+        conversation: currentConversation!,
+        message: message,
+      );
     }
   }
 
@@ -138,7 +139,25 @@ class HomeController extends GetxController
     final provider = await ServiceProviderManager.to.get(
       id: message.serviceId,
     );
-    provider?.send(message: message.requestMessage!);
+    provider?.send(
+      conversation: currentConversation!,
+      message: message.requestMessage!,
+    );
+  }
+
+  void onQuoted(Message message) {
+    currentQuotedMessage = message;
+    update();
+
+    Future.delayed(const Duration(milliseconds: 100), () {
+      focusNode.requestFocus();
+    });
+  }
+
+  // clear current quote message
+  void onCleared() {
+    currentQuotedMessage = null;
+    update();
   }
 
   void onAvatarClicked(Message message) {

@@ -1,3 +1,4 @@
+import 'package:answer/app/core/app/app_toast.dart';
 import 'package:answer/app/data/db/app_database.dart';
 import 'package:answer/app/data/models/service_token.dart';
 import 'package:answer/app/providers/service_provider_manager.dart';
@@ -98,6 +99,8 @@ class ServiceController extends GetxController with AppControllerMixin {
     update();
 
     await AppDatabase.instance.serviceProvidersDao.create(provider!);
+
+    AppToast.show(msg: 'saved_successfully'.tr);
   }
 
   Future<void> onBlocked(bool value) async {

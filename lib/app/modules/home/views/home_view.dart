@@ -66,12 +66,15 @@ class HomeView extends StatelessWidget with AppViewMixin<HomeController> {
               controller: controller.scroll,
               onRetried: controller.onRetried,
               onAvatarClicked: controller.onAvatarClicked,
+              onQuoted: controller.onQuoted,
             ),
           ),
           ChatInput(
             focusNode: controller.focusNode,
             controller: controller.textEditing,
             onSubmitted: controller.onSubmitted,
+            quoteMessage: controller.currentQuotedMessage,
+            onCleared: controller.onCleared,
           ),
         ],
       );
