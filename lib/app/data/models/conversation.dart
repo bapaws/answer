@@ -27,7 +27,10 @@ class Conversation {
   final String? name;
   final String? editName;
   final int? groupId;
-  final int? autoQuote;
+  final int autoQuote;
+  final int timeout;
+  final int maxTokens;
+  final String? promptId;
 
   String? get displayName => name ?? editName;
 
@@ -37,6 +40,9 @@ class Conversation {
     this.editName,
     this.groupId,
     this.autoQuote = 0,
+    this.timeout = 60,
+    this.maxTokens = 800,
+    this.promptId,
   });
 
   factory Conversation.fromJson(Map<String, dynamic> json) {
@@ -46,7 +52,10 @@ class Conversation {
       name: serializer.fromJson<String?>(json['name']),
       editName: serializer.fromJson<String?>(json['edit_name']),
       groupId: serializer.fromJson<int>(json['group_id']),
-      autoQuote: serializer.fromJson<int?>(json['auto_quote']),
+      autoQuote: serializer.fromJson<int?>(json['auto_quote']) ?? 0,
+      timeout: serializer.fromJson<int?>(json['timeout']) ?? 60,
+      maxTokens: serializer.fromJson<int?>(json['max_tokens']) ?? 800,
+      promptId: serializer.fromJson<String?>(json['prompt_id']),
     );
   }
 
@@ -57,7 +66,10 @@ class Conversation {
       'name': serializer.toJson<String?>(name),
       'edit_name': serializer.toJson<String?>(editName),
       'group_id': serializer.toJson<int?>(groupId),
-      'auto_quote': serializer.toJson<int?>(autoQuote),
+      'auto_quote': serializer.toJson<int?>(autoQuote) ?? 0,
+      'timeout': serializer.toJson<int?>(timeout),
+      'max_tokens': serializer.toJson<int?>(maxTokens),
+      'prompt_id': serializer.toJson<String?>(promptId),
     };
   }
 
@@ -68,6 +80,9 @@ class Conversation {
     String? pluginKey,
     int? groupId,
     int? autoQuote,
+    int? timeout,
+    int? maxTokens,
+    String? promptId,
   }) =>
       Conversation(
         id: id ?? this.id,
@@ -75,6 +90,9 @@ class Conversation {
         editName: editName ?? this.editName,
         groupId: groupId ?? this.groupId,
         autoQuote: autoQuote ?? this.autoQuote,
+        timeout: timeout ?? this.timeout,
+        maxTokens: maxTokens ?? this.maxTokens,
+        promptId: promptId ?? this.promptId,
       );
   @override
   String toString() {
@@ -84,12 +102,24 @@ class Conversation {
           ..write('editName: $editName')
           ..write('groupId: $groupId')
           ..write('autoQuote: $autoQuote')
+          ..write('timeout: $timeout')
+          ..write('maxTokens: $maxTokens')
+          ..write('promptId: $promptId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, editName, groupId);
+  int get hashCode => Object.hash(
+        id,
+        name,
+        editName,
+        groupId,
+        autoQuote,
+        timeout,
+        maxTokens,
+        promptId,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -99,5 +129,8 @@ class Conversation {
           other.name == name &&
           other.editName == editName &&
           other.autoQuote == autoQuote &&
-          other.groupId == groupId);
+          other.groupId == groupId &&
+          other.maxTokens == maxTokens &&
+          other.promptId == promptId &&
+          other.timeout == timeout);
 }

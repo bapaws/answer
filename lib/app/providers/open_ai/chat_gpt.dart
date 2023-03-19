@@ -5,51 +5,29 @@ import 'package:answer/app/data/db/app_database.dart';
 import 'package:answer/app/data/models/message.dart';
 import 'package:answer/app/providers/open_ai/chat_gpt_model.dart';
 import 'package:answer/app/providers/service_provider.dart';
-import 'package:answer/flavors/build_config.dart';
 import 'package:dio/dio.dart';
-import 'package:get/get.dart';
 
 import '../../data/models/conversation.dart';
-import '../../data/models/service_token.dart';
-import '../service_request_parameter.dart';
 
 class ChatGpt extends ServiceProvider {
+  final String model;
   final List<Map<String, String>> messages = [];
 
   ChatGpt({
-    super.onReceived,
+    this.model = 'gpt-3.5-turbo-0301',
+    required String id,
+    String name = 'ChatAI',
+    String avatar = 'assets/images/ai_avatar.png',
+    String? desc,
+    bool block = false,
   }) : super(
-          id: 'open_ai_chat_gpt',
-          name: 'ChatAI',
-          avatar: 'assets/images/ai_avatar.png',
-          desc: null,
+          id: id,
+          vendorId: 'open_ai_chat_gpt',
+          name: name,
+          avatar: avatar,
+          desc: desc,
           groupId: 0,
-          officialUrl: 'https://www.bapaws.com/chat/completions',
-          apiUrl: 'https://api.openai.com/v1/chat/completions',
-          help: 'chat_gpt_help'.tr,
-          helpUrl: 'https://www.bapaws.com/answer/help/chat_gpt.html',
-          hello: 'chat_gpt_hello'.tr,
-          tokens: [
-            ServiceToken(
-              id: 'chat_gpt_api_key',
-              name: 'API Key',
-              value: BuildConfig.instance.config.openAIApiKey ?? '',
-              serviceProviderId: 'open_ai_chat_gpt',
-            ),
-          ],
-          parameters: [
-            ServiceParameter(
-              key: 'model',
-              value: 'gpt-3.5-turbo-0301',
-              valueType: ServiceParameterValueType.choices,
-              choices: [
-                'gpt-3.5-turbo',
-                'gpt-3.5-turbo-0301',
-                '8K context',
-                '32K context',
-              ],
-            ),
-          ],
+          block: block,
         );
 
   @override
@@ -64,52 +42,26 @@ class ChatGpt extends ServiceProvider {
     if (!success) return false;
 
     try {
-      final messages = <Map<String, String>>[];
-      Message? quoteMessage = message.quoteMessage;
-      while (quoteMessage != null) {
-        messages.add({
-          'role': 'user',
-          'content': quoteMessage.requestMessage!.content!,
-        });
-        messages.add({
-          'role': 'assistant',
-          'content': quoteMessage.content!,
-        });
-        quoteMessage = quoteMessage.quoteMessage;
-      }
-
-      if (messages.isEmpty && message.conversationId != null) {
-        final list = await AppDatabase.instance.messagesDao.get(
-          conversationId: message.conversationId!,
-          serviceId: id,
-          type: MessageType.text,
-          limit: 8,
-        );
-        for (final item in list) {
-          if (item.requestMessage != null) {
-            messages.add({
-              'role': 'user',
-              'content': item.requestMessage!.content!,
-            });
-            messages.add({
-              'role': 'assistant',
-              'content': item.content!,
-            });
-          }
-        }
-      }
-      messages.add({'role': 'user', 'content': message.content!});
+      List<Map<String, String>> messages = await _appendMessages(
+        conversation,
+        message,
+      );
 
       final response = await AppHttp.post(
-        url!,
+        vendor.url!,
         data: {
-          for (final item in parameters) item.key: item.value,
+          'model': model,
+          'max_tokens': conversation.maxTokens,
           'messages': messages,
         },
-        options: Options(headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ${tokens.first.value}'
-        }),
+        options: Options(
+          sendTimeout: Duration(seconds: conversation.timeout),
+          receiveTimeout: Duration(seconds: conversation.timeout),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${vendor.tokens.first.value}',
+          },
+        ),
       );
       if (response.statusCode == HttpStatus.ok) {
         final model = ChatGptModel.fromJson(response.data);
@@ -133,5 +85,62 @@ class ChatGpt extends ServiceProvider {
       );
       return false;
     }
+  }
+
+  Future<List<Map<String, String>>> _appendMessages(
+    Conversation conversation,
+    Message message,
+  ) async {
+    final messages = <Map<String, String>>[];
+
+    if (conversation.promptId != null) {
+      final prompt = await AppDatabase.instance.promptDao.get(
+        id: conversation.promptId!,
+      );
+      if (prompt?.content != null) {
+        messages.add({
+          'role': 'system',
+          'content': prompt!.content!,
+        });
+      }
+    }
+
+    Message? quoteMessage = message.quoteMessage;
+    bool quoted = false;
+    while (quoteMessage != null) {
+      messages.add({
+        'role': 'user',
+        'content': quoteMessage.requestMessage!.content!,
+      });
+      messages.add({
+        'role': 'assistant',
+        'content': quoteMessage.content!,
+      });
+      quoteMessage = quoteMessage.quoteMessage;
+      quoted = true;
+    }
+
+    if (!quoted && conversation.autoQuote > 0) {
+      final list = await AppDatabase.instance.messagesDao.get(
+        conversationId: message.conversationId!,
+        serviceId: id,
+        type: MessageType.text,
+        limit: conversation.autoQuote,
+      );
+      for (final item in list) {
+        if (item.requestMessage != null) {
+          messages.add({
+            'role': 'user',
+            'content': item.requestMessage!.content!,
+          });
+          messages.add({
+            'role': 'assistant',
+            'content': item.content!,
+          });
+        }
+      }
+    }
+    messages.add({'role': 'user', 'content': message.content!});
+    return messages;
   }
 }

@@ -36,20 +36,18 @@ class ServiceTokenItemView extends StatelessWidget {
           style: Theme.of(context).textTheme.titleMedium,
         ),
       ),
-      detail: Expanded(
-        child: TextField(
-          controller: textEditingController,
-          focusNode: focusNode,
-          minLines: 1,
-          maxLines: 3,
-          enabled: enabled,
-          style: Theme.of(context).textTheme.bodyMedium,
-          decoration: InputDecoration.collapsed(
-            hintText: 'type_your_tokens'.trParams({'name': item.name}),
-          ),
-          onSubmitted: onSubmitted,
-          textInputAction: textInputAction ?? TextInputAction.done,
+      detail: TextField(
+        controller: textEditingController,
+        focusNode: focusNode,
+        minLines: 1,
+        maxLines: 3,
+        enabled: enabled,
+        style: Theme.of(context).textTheme.bodyMedium,
+        decoration: InputDecoration.collapsed(
+          hintText: 'type_your_tokens'.trParams({'name': item.name}),
         ),
+        onSubmitted: onSubmitted,
+        textInputAction: textInputAction ?? TextInputAction.done,
       ),
       trailing: IconButton(
         padding: EdgeInsets.zero,

@@ -30,6 +30,43 @@ class AppTheme {
             Colors.white,
           ),
           splashFactory: NoSplash.splashFactory,
+          shadowColor: MaterialStateProperty.all(
+            Colors.transparent,
+          ),
+          textStyle: MaterialStateProperty.all(
+            const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
+          ),
+          padding: MaterialStateProperty.all(
+            const EdgeInsets.all(4),
+          ),
+        ),
+      );
+
+  OutlinedButtonThemeData _getOutlineButtonTheme(Brightness brightness) =>
+      OutlinedButtonThemeData(
+        style: ButtonStyle(
+          splashFactory: NoSplash.splashFactory,
+          shadowColor: MaterialStateProperty.all(
+            Colors.transparent,
+          ),
+          iconColor: MaterialStateProperty.all(
+            brightness == Brightness.light ? Colors.black : Colors.white,
+          ),
+          textStyle: MaterialStateProperty.all(
+            TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color:
+                  brightness == Brightness.light ? Colors.black : Colors.white,
+            ),
+          ),
+          padding: MaterialStateProperty.all(
+            const EdgeInsets.all(4),
+          ),
         ),
       );
 
@@ -107,6 +144,7 @@ class AppTheme {
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       hoverColor: Colors.transparent,
+      outlinedButtonTheme: _getOutlineButtonTheme(brightness),
       elevatedButtonTheme: _getElevatedButtonTheme(brightness),
       textButtonTheme: _getTextButtonTheme(brightness),
       buttonTheme: _getButtonTheme(brightness),

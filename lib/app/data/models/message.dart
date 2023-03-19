@@ -14,7 +14,7 @@ import 'dart:convert';
 
 import 'package:answer/app/data/models/value_serializer.dart';
 
-enum MessageType { text, image, loading, error }
+enum MessageType { text, image, loading, error, system }
 
 enum MessageFromType { receive, send }
 

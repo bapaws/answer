@@ -44,8 +44,8 @@ class AppCell extends StatelessWidget {
     this.hiddenDivider = false,
     this.padding,
     this.margin,
-    this.minHeight,
-    this.maxHeight,
+    this.minHeight = 54,
+    this.maxHeight = 54,
   }) : super(key: key) {
     _trailing = const Icon(Icons.chevron_right);
   }
@@ -93,6 +93,32 @@ class AppCell extends StatelessWidget {
             size: 18,
           )
         : null;
+  }
+
+  AppCell.textFieldTile({
+    Key? key,
+    required this.title,
+    this.leading,
+    this.hiddenDivider = false,
+    TextEditingController? controller,
+    FocusNode? focusNode,
+    bool? enabled,
+    String? hintText,
+    this.description,
+    this.onPressed,
+    this.color,
+    this.padding,
+    this.margin,
+    this.minHeight = 44,
+    this.maxHeight,
+  }) : super(key: key) {
+    _trailing = null;
+    detail = TextField(
+      controller: controller,
+      focusNode: focusNode,
+      enabled: enabled,
+      decoration: InputDecoration.collapsed(hintText: hintText),
+    );
   }
 
   @override
@@ -157,9 +183,9 @@ class AppCell extends StatelessWidget {
             children: [
               title,
               const SizedBox(
-                width: 8,
+                width: 16,
               ),
-              detail!,
+              Expanded(child: detail!),
             ],
           );
     content = description == null
@@ -168,11 +194,11 @@ class AppCell extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              title,
+              content,
               const SizedBox(
                 height: 4,
               ),
-              content,
+              description!,
             ],
           );
     return Row(

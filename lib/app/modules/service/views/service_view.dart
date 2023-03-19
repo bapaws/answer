@@ -1,4 +1,6 @@
+import 'package:answer/app/providers/open_ai/chat_gpt.dart';
 import 'package:answer/app/views/app_cell.dart';
+import 'package:answer/app/views/app_section.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher_string.dart';
@@ -46,39 +48,80 @@ class ServiceView extends StatelessWidget with AppViewMixin<ServiceController> {
         ServiceInfo(
           provider: controller.provider!,
         ),
-        // const SizedBox(
-        //   height: 8,
-        // ),
-        // AppCell.switchTile(
-        //   title: SizedBox(
-        //     width: titleWidth,
-        //     child: Text(
-        //       'Block',
-        //       style: Theme.of(context).textTheme.titleMedium,
-        //     ),
-        //   ),
-        //   initialValue: controller.provider?.block ?? false,
-        //   hiddenDivider: true,
-        //   maxHeight: 54,
-        //   onToggle: (value) {
-        //     controller.onBlocked(value);
-        //   },
-        // ),
+        if (controller.provider?.desc != null)
+          AppCell(
+            title: Text(
+              controller.provider!.desc!,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ),
         const SizedBox(
           height: 8,
         ),
-        // if (controller.provider?.officialUrl != null)
-        //   AppCell(
-        //     title: SizedBox(
-        //       width: titleWidth,
-        //       child: Text(
-        //         'Base URL',
-        //         style: Theme.of(context).textTheme.titleMedium,
-        //       ),
-        //     ),
-        //     detail: Text(controller.provider!.officialUrl!),
-        //   ),
-        if (controller.provider?.apiUrl != null)
+        AppCell.switchTile(
+          title: SizedBox(
+            width: titleWidth,
+            child: Text(
+              'block'.tr,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+          initialValue: controller.provider?.block ?? false,
+          hiddenDivider: true,
+          maxHeight: 54,
+          onToggle: (value) {
+            controller.onBlocked(value);
+          },
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        if (controller.provider is ChatGpt)
+          AppCell(
+            title: SizedBox(
+              width: 80,
+              child: Text(
+                'model'.tr,
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            detail: Text((controller.provider as ChatGpt).model),
+            hiddenDivider: true,
+          ),
+        const SizedBox(
+          height: 8,
+        ),
+        AppSection(title: Text('vendor'.tr)),
+        AppCell(
+          title: SizedBox(
+            width: 80,
+            child: Text(
+              'vendor'.tr,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+          detail: Text(controller.vendor?.name ?? ''),
+        ),
+        AppCell(
+          title: SizedBox(
+            width: 80,
+            child: Text(
+              'official_url'.tr,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          ),
+          detail: Text(controller.vendor?.officialUrl ?? ''),
+          hiddenDivider: true,
+          onPressed: () {
+            if (controller.vendor?.officialUrl != null) {
+              launchUrlString(controller.vendor!.officialUrl!);
+            }
+          },
+        ),
+        const SizedBox(
+          height: 8,
+        ),
+        if (controller.vendor?.url != null)
           AppCell(
             title: SizedBox(
               width: 80,
@@ -87,39 +130,27 @@ class ServiceView extends StatelessWidget with AppViewMixin<ServiceController> {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
-            detail: Expanded(
-              child: TextField(
-                minLines: 1,
-                maxLines: 1,
-                autocorrect: false,
-                enabled: controller.editing,
-                focusNode: controller.apiUrlFocusNode,
-                controller: controller.apiUrlTextEditingController,
-                style: Theme.of(context).textTheme.bodyMedium,
-                decoration: InputDecoration.collapsed(
-                  hintText: 'type_your_tokens'.trParams({'name': 'API URL'}),
-                ),
-                textInputAction: controller.provider!.tokens.isEmpty
-                    ? TextInputAction.done
-                    : TextInputAction.next,
+            detail: TextField(
+              minLines: 1,
+              maxLines: 1,
+              autocorrect: false,
+              enabled: controller.editing,
+              focusNode: controller.apiUrlFocusNode,
+              controller: controller.apiUrlTextEditingController,
+              style: Theme.of(context).textTheme.bodyMedium,
+              decoration: InputDecoration.collapsed(
+                hintText: 'type_your_tokens'.trParams({'name': 'API URL'}),
               ),
+              textInputAction: controller.vendor!.tokens.isEmpty
+                  ? TextInputAction.done
+                  : TextInputAction.next,
             ),
+            hiddenDivider: true,
           ),
-        // AppCell(
-        //   title: SizedBox(
-        //     width: titleWidth,
-        //     child: Text(
-        //       'API URL',
-        //       style: Theme.of(context).textTheme.titleMedium,
-        //     ),
-        //   ),
-        //   detail: Text(controller.provider!.apiUrl!),
-        //   hiddenDivider: true,
-        // ),
         const SizedBox(
           height: 8,
         ),
-        for (final item in controller.provider!.tokens)
+        for (final item in controller.vendor!.tokens)
           ServiceTokenItemView(
             item: item,
             textEditingController: controller.textEditingControllers[item.id]!,
@@ -129,14 +160,14 @@ class ServiceView extends StatelessWidget with AppViewMixin<ServiceController> {
             },
             enabled: controller.editing,
             obscured: controller.isObscure(item),
-            textInputAction: item == controller.provider!.tokens.last
+            textInputAction: item == controller.vendor!.tokens.last
                 ? TextInputAction.done
                 : TextInputAction.next,
           ),
         const SizedBox(
           height: 8,
         ),
-        if (controller.provider?.helpUrl?.isNotEmpty == true)
+        if (controller.vendor?.helpUrl?.isNotEmpty == true)
           AppCell.navigation(
             title: SizedBox(
               width: titleWidth,
@@ -147,7 +178,7 @@ class ServiceView extends StatelessWidget with AppViewMixin<ServiceController> {
             ),
             hiddenDivider: true,
             onPressed: () {
-              launchUrlString(controller.provider!.helpUrl!);
+              launchUrlString(controller.vendor!.helpUrl!);
             },
           ),
       ],

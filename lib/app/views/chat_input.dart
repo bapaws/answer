@@ -106,7 +106,7 @@ class ChatInput extends StatelessWidget {
           ),
           Expanded(
             child: Text(
-              quoteMessage?.content?.replaceAll(RegExp(r"\s+"), "") ?? '',
+              quoteMessage?.content?.replaceAll('\n', '') ?? '',
               style: Theme.of(context).textTheme.bodySmall,
               maxLines: 2,
             ),

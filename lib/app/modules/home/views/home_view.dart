@@ -1,4 +1,3 @@
-import 'package:answer/app/core/app/app_toast.dart';
 import 'package:answer/app/core/app/app_view_mixin.dart';
 import 'package:answer/app/modules/home/views/home_drawer.dart';
 import 'package:answer/app/views/chat_input.dart';
@@ -37,18 +36,9 @@ class HomeView extends StatelessWidget with AppViewMixin<HomeController> {
       titleSpacing: 0,
       actions: [
         IconButton(
-          onPressed: () async {
-            final conv = await controller.changeConversation();
-            if (conv?.displayName != null) {
-              AppToast.show(
-                msg: 'new_chat_created'.trParams(
-                  {'name': conv!.displayName!},
-                ),
-              );
-            }
-          },
+          onPressed: controller.toConversation,
           icon: const Icon(
-            Icons.add,
+            Icons.more_horiz,
             size: 25,
           ),
         ),
