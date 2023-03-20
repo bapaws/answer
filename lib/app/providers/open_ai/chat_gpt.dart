@@ -10,12 +10,11 @@ import 'package:dio/dio.dart';
 import '../../data/models/conversation.dart';
 
 class ChatGpt extends ServiceProvider {
-  final String model;
   final List<Map<String, String>> messages = [];
 
   ChatGpt({
-    this.model = 'gpt-3.5-turbo-0301',
     required String id,
+    String model = 'gpt-3.5-turbo-0301',
     String name = 'ChatAI',
     String avatar = 'assets/images/ai_avatar.png',
     String? desc,
@@ -23,6 +22,7 @@ class ChatGpt extends ServiceProvider {
   }) : super(
           id: id,
           vendorId: 'open_ai_chat_gpt',
+          model: model,
           name: name,
           avatar: avatar,
           desc: desc,

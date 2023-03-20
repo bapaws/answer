@@ -43,6 +43,7 @@ class ServiceProvider {
 
   String id;
   String vendorId;
+  String model;
   String name;
   String avatar;
   String? desc;
@@ -54,6 +55,7 @@ class ServiceProvider {
   ServiceProvider({
     required this.id,
     required this.vendorId,
+    required this.model,
     required this.name,
     required this.avatar,
     required this.desc,
@@ -69,6 +71,7 @@ class ServiceProvider {
   ServiceProvider copyWith({
     String? id,
     String? vendorId,
+    String? model,
     String? name,
     String? avatar,
     String? desc,
@@ -79,6 +82,7 @@ class ServiceProvider {
       ServiceProvider(
         id: id ?? map?['id'] ?? this.id,
         vendorId: vendorId ?? map?['vendor_id'] ?? this.vendorId,
+        model: model ?? map?['model'] ?? this.model,
         name: name ?? map?['name'] ?? this.name,
         avatar: avatar ?? map?['avatar'] ?? this.avatar,
         desc: desc ?? map?['desc'] ?? this.desc,
@@ -90,7 +94,8 @@ class ServiceProvider {
     const ValueSerializer serializer = ValueSerializer();
     return ServiceProvider(
       id: json["id"],
-      vendorId: json["vendor_iId"],
+      vendorId: json["vendor_id"],
+      model: json["model"],
       name: json["name"],
       avatar: json["avatar"],
       desc: json['desc'],
@@ -102,6 +107,7 @@ class ServiceProvider {
   Map<String, dynamic> toJson() => {
         "id": id,
         "vendor_id": vendorId,
+        "model": model,
         "name": name,
         "avatar": avatar,
         "desc": desc,

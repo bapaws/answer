@@ -104,6 +104,7 @@ class AppCell extends StatelessWidget {
     FocusNode? focusNode,
     bool? enabled,
     String? hintText,
+    TextInputAction? textInputAction,
     this.description,
     this.onPressed,
     this.color,
@@ -118,6 +119,7 @@ class AppCell extends StatelessWidget {
       focusNode: focusNode,
       enabled: enabled,
       decoration: InputDecoration.collapsed(hintText: hintText),
+      textInputAction: textInputAction,
     );
   }
 

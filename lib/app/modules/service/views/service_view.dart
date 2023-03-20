@@ -77,7 +77,7 @@ class ServiceView extends StatelessWidget with AppViewMixin<ServiceController> {
           height: 8,
         ),
         if (controller.provider is ChatGpt)
-          AppCell(
+          AppCell.textFieldTile(
             title: SizedBox(
               width: 80,
               child: Text(
@@ -85,7 +85,9 @@ class ServiceView extends StatelessWidget with AppViewMixin<ServiceController> {
                 style: Theme.of(context).textTheme.titleMedium,
               ),
             ),
-            detail: Text((controller.provider as ChatGpt).model),
+            controller: controller.modelTextEditing,
+            enabled: controller.editing,
+            hintText: (controller.provider as ChatGpt).model,
             hiddenDivider: true,
           ),
         const SizedBox(
@@ -141,9 +143,7 @@ class ServiceView extends StatelessWidget with AppViewMixin<ServiceController> {
               decoration: InputDecoration.collapsed(
                 hintText: 'type_your_tokens'.trParams({'name': 'API URL'}),
               ),
-              textInputAction: controller.vendor!.tokens.isEmpty
-                  ? TextInputAction.done
-                  : TextInputAction.next,
+              textInputAction: TextInputAction.next,
             ),
             hiddenDivider: true,
           ),
@@ -160,9 +160,7 @@ class ServiceView extends StatelessWidget with AppViewMixin<ServiceController> {
             },
             enabled: controller.editing,
             obscured: controller.isObscure(item),
-            textInputAction: item == controller.vendor!.tokens.last
-                ? TextInputAction.done
-                : TextInputAction.next,
+            textInputAction: TextInputAction.next,
           ),
         const SizedBox(
           height: 8,

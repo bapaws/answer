@@ -49,6 +49,7 @@ class ConversationView extends StatelessWidget
             minLines: 1,
             maxLines: 3,
             enabled: controller.editing,
+            focusNode: controller.nameFocusNode,
             controller: controller.nameTextEditing,
             style: Theme.of(context).textTheme.bodyMedium,
             decoration: const InputDecoration.collapsed(
@@ -78,6 +79,7 @@ class ConversationView extends StatelessWidget
           ),
           enabled: controller.editing,
           controller: controller.maxTokensTextEditing,
+          textInputAction: TextInputAction.next,
         ),
         AppCell.textFieldTile(
           title: SizedBox(
@@ -87,6 +89,7 @@ class ConversationView extends StatelessWidget
           enabled: controller.editing,
           controller: controller.timeoutTextEditing,
           hiddenDivider: true,
+          textInputAction: TextInputAction.next,
         ),
         const SizedBox(
           height: 16,

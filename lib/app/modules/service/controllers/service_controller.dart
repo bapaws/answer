@@ -21,6 +21,10 @@ class ServiceController extends GetxController with AppControllerMixin {
   final Map<String, TextEditingController> textEditingControllers = {};
   final Map<String, FocusNode> focusNodes = {};
 
+  late final modelTextEditing = TextEditingController(
+    text: provider?.model,
+  );
+
   static const obscureText = '••••••';
 
   bool editing = false;
@@ -90,7 +94,12 @@ class ServiceController extends GetxController with AppControllerMixin {
   }
 
   Future<void> onSaved() async {
-    if (provider == null) return;
+    if (provider == null && vendor == null) return;
+
+    if (modelTextEditing.text != provider?.model) {
+      provider = provider?.copyWith(model: modelTextEditing.text);
+      await AppDatabase.instance.serviceProvidersDao.create(provider!);
+    }
 
     for (int index = 0; index < vendor!.tokens.length; index++) {
       final token = vendor!.tokens[index];
