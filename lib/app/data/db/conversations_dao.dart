@@ -28,13 +28,14 @@ class ConversationsDao {
   ) async {
     // version 3
     final result = await db.rawQuery(
-      'SELECT * FROM sqlite_master WHERE name="$table" AND sql LIKE "%prompt%";',
+      'SELECT * FROM sqlite_master WHERE name="$table" AND sql LIKE "%prompt_id%";',
     );
     if (result.isEmpty) {
       await db.execute('ALTER TABLE $table ADD COLUMN auto_quote INTEGER;');
 
       await db.execute('ALTER TABLE $table ADD COLUMN prompt_id TEXT;');
-      await db.execute('ALTER TABLE $table ADD COLUMN timeout TEXT;');
+      await db.execute('ALTER TABLE $table ADD COLUMN max_tokens INTEGER;');
+      await db.execute('ALTER TABLE $table ADD COLUMN timeout INTEGER;');
     }
   }
 
