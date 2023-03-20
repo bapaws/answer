@@ -14,14 +14,10 @@ class ServiceProvidersDao {
       CREATE TABLE IF NOT EXISTS ${ServiceProvidersDao.table} (
         id TEXT NOT NULL PRIMARY KEY,
         name TEXT,
+        vendor_id TEXT,
         avatar TEXT,
         desc TEXT,
-        api_url TEXT,
-        edit_api_url TEXT,
-        official_url TEXT,
         group_id INTEGER,
-        help TEXT,
-        help_url TEXT,
         hello TEXT,
         block INTEGER DEFAULT 0
       );
@@ -35,16 +31,23 @@ class ServiceProvidersDao {
   ) async {
     // new version is 2
     final hello = await db.rawQuery(
-      'select * from sqlite_master where name="$table" and sql like "%hello%";',
+      'SELECT * FROM sqlite_master WHERE name="$table" AND sql LIKE "%hello%";',
     );
     if (hello.isEmpty) {
       await db.execute('ALTER TABLE $table ADD COLUMN hello TEXT;');
     }
     final desc = await db.rawQuery(
-      'select * from sqlite_master where name="$table" and sql like "%desc%";',
+      'SELECT * FROM sqlite_master WHERE name="$table" AND sql LIKE "%desc%";',
     );
     if (desc.isEmpty) {
       await db.execute('ALTER TABLE $table ADD COLUMN desc TEXT;');
+    }
+    // VERSION 3
+    final vendorId = await db.rawQuery(
+      'SELECT * FROM sqlite_master WHERE name="$table" AND sql LIKE "%vendor_id%";',
+    );
+    if (vendorId.isEmpty) {
+      await db.execute('ALTER TABLE $table ADD COLUMN vendor_id TEXT;');
     }
   }
 

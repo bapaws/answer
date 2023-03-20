@@ -6,6 +6,9 @@ abstract class Routes {
   static const home = _Paths.home;
   static const settings = _Paths.settings;
   static const service = _Paths.service;
+  static const conversation = _Paths.conversation;
+  static const prompt = _Paths.prompt;
+  static const newPrompt = _Paths.newPrompt;
 }
 
 abstract class _Paths {
@@ -13,4 +16,7 @@ abstract class _Paths {
   static const home = '/';
   static const settings = '/settings';
   static const service = '/service';
+  static const conversation = '/conversation';
+  static const prompt = '/prompt';
+  static const newPrompt = '/new-prompt';
 }

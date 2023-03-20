@@ -34,7 +34,7 @@ class _AppState extends State<App> {
       getPages: AppPages.routes,
       fallbackLocale: const Locale('en', 'US'),
       locale: Get.deviceLocale ?? const Locale('en', 'US'),
-      // locale: AppManager.to.locale ?? const Locale('en', 'US'),
+      // locale: AppManager.to.locale ?? const Locale('zh', 'CN'),
       translations: AppTranslation(),
       builder: AppProgressHud.init(),
       debugShowCheckedModeBanner: false,

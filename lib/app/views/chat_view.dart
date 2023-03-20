@@ -1,6 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:answer/app/views/chat_loading_item_view.dart';
 import 'package:answer/app/views/chat_text_receive_item_view.dart';
+import 'package:flutter/material.dart';
 
 import '../data/models/message.dart';
 
@@ -9,12 +9,15 @@ class ChatView extends StatelessWidget {
   final ScrollController controller;
   final ValueChanged<Message> onRetried;
   final ValueChanged<Message> onAvatarClicked;
+  final ValueChanged<Message>? onQuoted;
+
   const ChatView({
     Key? key,
     required this.messages,
     required this.controller,
     required this.onRetried,
     required this.onAvatarClicked,
+    required this.onQuoted,
   }) : super(key: key);
 
   @override
@@ -40,6 +43,7 @@ class ChatView extends StatelessWidget {
                   message: messages[index],
                   onRetried: onRetried,
                   onAvatarClicked: onAvatarClicked,
+                  onQuoted: onQuoted,
                 );
             }
           },

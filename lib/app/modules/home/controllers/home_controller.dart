@@ -1,21 +1,21 @@
 import 'dart:core';
 
-import 'package:flutter/cupertino.dart';
-import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:answer/app/core/app/app_controller_mixin.dart';
 import 'package:answer/app/core/app/app_hive_keys.dart';
 import 'package:answer/app/core/app/app_manager.dart';
+import 'package:answer/app/core/app/app_toast.dart';
 import 'package:answer/app/core/mixin/refresh_mixin.dart';
 import 'package:answer/app/data/db/app_database.dart';
 import 'package:answer/app/data/models/group.dart';
 import 'package:answer/app/providers/service_provider_manager.dart';
+import 'package:flutter/cupertino.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:get/get.dart';
 
 import '../../../data/db/app_uuid.dart';
 import '../../../data/models/conversation.dart';
 import '../../../data/models/message.dart';
 import '../../../routes/app_pages.dart';
-import 'home_drawer_controller.dart';
 
 class HomeController extends GetxController
     with AppControllerMixin, RefreshMixin {
@@ -33,8 +33,9 @@ class HomeController extends GetxController
     );
   }
 
+  Message? currentQuotedMessage;
+
   final List<Conversation> conversations = [];
-  final List<HomeDrawerController> homeDrawerControllers = [];
 
   Conversation? get currentConversation =>
       conversations.isEmpty || currentConversationIndex == -1
@@ -74,35 +75,37 @@ class HomeController extends GetxController
     super.onInit();
   }
 
-  @override
-  Future<void> onReady() async {
-    super.onReady();
-  }
-
-  @override
-  void onClose() {
-    super.onClose();
-  }
-
   Future<void> onSubmitted(String value) async {
+    if (value.isEmpty) {
+      AppToast.show(msg: 'unable_send'.tr);
+      return;
+    }
+
     final message = Message(
       id: AppUuid.value,
       type: MessageType.text,
       fromType: MessageFromType.send,
       content: value,
       createAt: DateTime.now(),
+      quoteMessage: currentQuotedMessage,
       conversationId: currentConversation!.id,
     );
     await AppDatabase.instance.messagesDao.create(message);
     messages.insert(0, message);
+
+    currentQuotedMessage = null;
+
     update();
 
-    final providers = await ServiceProviderManager.to.getAll(
+    final providers = await ServiceProviderManager.instance.getAll(
       group: groups[currentGroupIndex],
       conversation: currentConversation!,
     );
     for (final item in providers) {
-      item.send(message: message);
+      item.send(
+        conversation: currentConversation!,
+        message: message,
+      );
     }
   }
 
@@ -135,18 +138,39 @@ class HomeController extends GetxController
 
     await AppDatabase.instance.messagesDao.delete(message);
 
-    final provider = await ServiceProviderManager.to.get(
+    final provider = await ServiceProviderManager.instance.get(
       id: message.serviceId,
     );
-    provider?.send(message: message.requestMessage!);
+    provider?.send(
+      conversation: currentConversation!,
+      message: message.requestMessage!,
+    );
+  }
+
+  void onQuoted(Message message) {
+    currentQuotedMessage = message;
+    update();
+
+    Future.delayed(const Duration(milliseconds: 100), () {
+      focusNode.requestFocus();
+    });
+  }
+
+  // clear current quote message
+  void onCleared() {
+    currentQuotedMessage = null;
+    update();
   }
 
   void onAvatarClicked(Message message) {
     focusNode.unfocus();
-    Get.toNamed(
-      Routes.service,
-      arguments: message.serviceId,
-    );
+    if (message.type != MessageType.system &&
+        message.fromType != MessageFromType.send) {
+      Get.toNamed(
+        Routes.service,
+        arguments: message.serviceId,
+      );
+    }
   }
 
   Future<void> changeGroup(int index) async {
@@ -154,13 +178,6 @@ class HomeController extends GetxController
     conversations.addAll(
       await AppDatabase.instance.conversationsDao.getAll(
         groupId: groups[currentGroupIndex].id,
-      ),
-    );
-
-    homeDrawerControllers.clear();
-    homeDrawerControllers.addAll(
-      conversations.map(
-        (e) => HomeDrawerController(e),
       ),
     );
 
@@ -175,6 +192,7 @@ class HomeController extends GetxController
       await _createConversation();
       index = conversations.length - 1;
     } else if (currentConversationIndex == index) {
+      update();
       return currentConversation;
     }
 
@@ -190,16 +208,10 @@ class HomeController extends GetxController
 
     update();
 
-    final providers = await ServiceProviderManager.to.getAll(
+    await ServiceProviderManager.instance.changeConversation(
       group: groups[currentGroupIndex],
       conversation: currentConversation!,
     );
-    for (final item in providers) {
-      item.onInit(
-        group: groups[currentGroupIndex],
-        conversation: currentConversation!,
-      );
-    }
 
     return currentConversation;
   }
@@ -222,9 +234,6 @@ class HomeController extends GetxController
     );
 
     conversations.add(conversation);
-    homeDrawerControllers.add(
-      HomeDrawerController(conversation),
-    );
   }
 
   Future<void> updateConversation(
@@ -243,11 +252,12 @@ class HomeController extends GetxController
     update();
   }
 
-  Future<Conversation> deleteConversation(int index) async {
-    final Conversation conversation = conversations[index];
+  Future<Conversation> deleteConversation(Conversation conversation) async {
+    final index = conversations.indexWhere(
+      (element) => element.id == conversation.id,
+    );
 
     conversations.removeAt(index);
-    homeDrawerControllers.removeAt(index);
     await AppDatabase.instance.conversationsDao.delete(
       conversation.id,
     );
@@ -289,4 +299,11 @@ class HomeController extends GetxController
 
   @override
   Future<void> onTopScroll() async {}
+
+  void toConversation({Conversation? conversation}) {
+    Get.toNamed(Routes.conversation, arguments: {
+      'group': groups[currentGroupIndex],
+      'conversation': conversation ?? currentConversation,
+    });
+  }
 }

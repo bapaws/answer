@@ -22,14 +22,15 @@
 
 import 'package:answer/app/data/models/value_serializer.dart';
 
-import 'message.dart';
-
 class Conversation {
   final String id;
   final String? name;
   final String? editName;
   final int? groupId;
-  final List<Message>? messages;
+  final int autoQuote;
+  final int timeout;
+  final int maxTokens;
+  final String? promptId;
 
   String? get displayName => name ?? editName;
 
@@ -38,7 +39,10 @@ class Conversation {
     this.name,
     this.editName,
     this.groupId,
-    this.messages,
+    this.autoQuote = 0,
+    this.timeout = 60,
+    this.maxTokens = 800,
+    this.promptId,
   });
 
   factory Conversation.fromJson(Map<String, dynamic> json) {
@@ -48,13 +52,10 @@ class Conversation {
       name: serializer.fromJson<String?>(json['name']),
       editName: serializer.fromJson<String?>(json['edit_name']),
       groupId: serializer.fromJson<int>(json['group_id']),
-      messages: json["messages"] == null
-          ? null
-          : List<Message>.from(
-              json["messages"].map(
-                (x) => Message.fromJson(x),
-              ),
-            ),
+      autoQuote: serializer.fromJson<int?>(json['auto_quote']) ?? 0,
+      timeout: serializer.fromJson<int?>(json['timeout']) ?? 60,
+      maxTokens: serializer.fromJson<int?>(json['max_tokens']) ?? 800,
+      promptId: serializer.fromJson<String?>(json['prompt_id']),
     );
   }
 
@@ -65,8 +66,10 @@ class Conversation {
       'name': serializer.toJson<String?>(name),
       'edit_name': serializer.toJson<String?>(editName),
       'group_id': serializer.toJson<int?>(groupId),
-      if (messages != null)
-        "messages": List<dynamic>.from(messages!.map((x) => x.toJson())),
+      'auto_quote': serializer.toJson<int?>(autoQuote) ?? 0,
+      'timeout': serializer.toJson<int?>(timeout),
+      'max_tokens': serializer.toJson<int?>(maxTokens),
+      'prompt_id': serializer.toJson<String?>(promptId),
     };
   }
 
@@ -76,12 +79,20 @@ class Conversation {
     String? editName,
     String? pluginKey,
     int? groupId,
+    int? autoQuote,
+    int? timeout,
+    int? maxTokens,
+    String? promptId,
   }) =>
       Conversation(
         id: id ?? this.id,
         name: name ?? this.name,
         editName: editName ?? this.editName,
         groupId: groupId ?? this.groupId,
+        autoQuote: autoQuote ?? this.autoQuote,
+        timeout: timeout ?? this.timeout,
+        maxTokens: maxTokens ?? this.maxTokens,
+        promptId: promptId ?? this.promptId,
       );
   @override
   String toString() {
@@ -90,12 +101,25 @@ class Conversation {
           ..write('name: $name, ')
           ..write('editName: $editName')
           ..write('groupId: $groupId')
+          ..write('autoQuote: $autoQuote')
+          ..write('timeout: $timeout')
+          ..write('maxTokens: $maxTokens')
+          ..write('promptId: $promptId')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, editName, groupId);
+  int get hashCode => Object.hash(
+        id,
+        name,
+        editName,
+        groupId,
+        autoQuote,
+        timeout,
+        maxTokens,
+        promptId,
+      );
 
   @override
   bool operator ==(Object other) =>
@@ -104,5 +128,9 @@ class Conversation {
           other.id == id &&
           other.name == name &&
           other.editName == editName &&
-          other.groupId == groupId);
+          other.autoQuote == autoQuote &&
+          other.groupId == groupId &&
+          other.maxTokens == maxTokens &&
+          other.promptId == promptId &&
+          other.timeout == timeout);
 }

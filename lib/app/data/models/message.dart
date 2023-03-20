@@ -14,7 +14,7 @@ import 'dart:convert';
 
 import 'package:answer/app/data/models/value_serializer.dart';
 
-enum MessageType { text, image, loading, error }
+enum MessageType { text, image, loading, error, system }
 
 enum MessageFromType { receive, send }
 
@@ -30,6 +30,7 @@ class Message {
   final String? content;
   final DateTime? createAt;
   final Message? requestMessage;
+  final Message? quoteMessage;
   final String? responseData;
   final String? conversationId;
   final String? serviceId;
@@ -47,6 +48,7 @@ class Message {
     this.createAt,
     this.requestMessage,
     this.responseData,
+    this.quoteMessage,
     required this.conversationId,
     this.serviceId,
   });
@@ -57,8 +59,12 @@ class Message {
 
   factory Message.fromJson(Map<String, dynamic> json) {
     const serializer = ValueSerializer();
-    final requestMessageJson =
-        serializer.fromJson<String?>(json["request_message"]);
+    final requestMessageJson = serializer.fromJson<String?>(
+      json["request_message"],
+    );
+    final quoteMessage = serializer.fromJson<String?>(
+      json["quote_message"],
+    );
     return Message(
       id: serializer.fromJson<String?>(json['id']),
       type: MessageType.values[serializer.fromJson<int?>(json['type']) ?? 0],
@@ -71,6 +77,8 @@ class Message {
       requestMessage: requestMessageJson == null
           ? null
           : Message.fromRawJson(requestMessageJson),
+      quoteMessage:
+          quoteMessage == null ? null : Message.fromRawJson(quoteMessage),
       responseData: serializer.fromJson<String?>(json["response_data"]),
       conversationId: serializer.fromJson<String?>(json['conversation_id']),
       serviceId: serializer.fromJson<String?>(json['service_id']),
@@ -89,6 +97,7 @@ class Message {
       'create_at': serializer.toJson<DateTime?>(createAt),
       'request_message':
           serializer.toJson<String?>(requestMessage?.toRawJson()),
+      'quote_message': serializer.toJson<String?>(quoteMessage?.toRawJson()),
       'response_data': serializer.toJson<String?>(responseData),
       'conversation_id': serializer.toJson<String?>(conversationId),
       'service_id': serializer.toJson<String?>(serviceId),
@@ -104,6 +113,7 @@ class Message {
     String? content,
     DateTime? createAt,
     Message? requestMessage,
+    Message? quoteMessage,
     String? responseData,
     String? conversationId,
     String? serviceId,
@@ -117,6 +127,7 @@ class Message {
         content: content ?? this.content,
         createAt: createAt ?? this.createAt,
         requestMessage: requestMessage ?? this.requestMessage,
+        quoteMessage: quoteMessage ?? this.quoteMessage,
         responseData: responseData ?? this.responseData,
         conversationId: conversationId ?? this.conversationId,
         serviceId: serviceId ?? this.serviceId,
@@ -132,7 +143,8 @@ class Message {
           ..write('serviceAvatar: $serviceAvatar, ')
           ..write('content: $content, ')
           ..write('createAt: $createAt, ')
-          ..write('data: $requestMessage, ')
+          ..write('requestMessage: $requestMessage, ')
+          ..write('quoteMessage: $quoteMessage, ')
           ..write('data: $responseData, ')
           ..write('conversationId: $conversationId')
           ..write('serviceId: $serviceId')
@@ -150,6 +162,7 @@ class Message {
         content,
         createAt,
         requestMessage,
+        quoteMessage,
         responseData,
         conversationId,
         serviceId,
@@ -167,6 +180,7 @@ class Message {
           other.content == content &&
           other.createAt == createAt &&
           other.requestMessage == requestMessage &&
+          other.quoteMessage == quoteMessage &&
           other.responseData == responseData &&
           other.conversationId == conversationId &&
           other.serviceId == serviceId);

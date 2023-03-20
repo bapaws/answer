@@ -20,11 +20,34 @@ class MessagesDao {
         content TEXT,
         create_at DATETIME,
         request_message TEXT,
+        quote_message TEXT,
         response_data TEXT,
         conversation_id TEXT REFERENCES ${ConversationsDao.table} (id),
         service_id TEXT
       );
     ''');
+  }
+
+  static Future<void> onUpgrade(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) async {
+    // new version is 3
+    final tables = await db.rawQuery(
+      'SELECT * FROM sqlite_master WHERE name LIKE "$table%";',
+    );
+    for (final item in tables) {
+      final tableName = item['name'];
+      final quoteMessage = await db.rawQuery(
+        'SELECT * FROM sqlite_master WHERE name LIKE "$tableName" AND sql LIKE "%quote_message%";',
+      );
+      if (quoteMessage.isEmpty) {
+        await db.execute(
+          'ALTER TABLE $tableName ADD COLUMN quote_message TEXT;',
+        );
+      }
+    }
   }
 
   Future<void> dropTable({required String conversationId}) {

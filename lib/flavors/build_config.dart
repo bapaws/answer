@@ -1,5 +1,6 @@
 import 'package:answer/app/core/app/app_http.dart';
 import 'package:answer/app/data/db/app_database.dart';
+import 'package:answer/app/providers/service_provider_manager.dart';
 
 import '../app/core/app/app_manager.dart';
 import 'env_config.dart';
@@ -37,5 +38,6 @@ class BuildConfig {
     await AppDatabase.initialize(
       dbName: envConfig.dbName,
     );
+    await ServiceProviderManager.initialize();
   }
 }

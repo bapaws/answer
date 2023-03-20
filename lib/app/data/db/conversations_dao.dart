@@ -13,9 +13,31 @@ class ConversationsDao {
         name TEXT,
         edit_name TEXT,
         group_id INTEGER,
+        auto_quote INTEGER,
+        prompt_id String,
+        max_tokens INTEGER DEFAULT 800,
+        timeout INTEGER DEFAULT 60,
         message_version INTEGER DEFAULT 0
       );
     ''');
+
+  static Future<void> onUpgrade(
+    Database db,
+    int oldVersion,
+    int newVersion,
+  ) async {
+    // version 3
+    final result = await db.rawQuery(
+      'SELECT * FROM sqlite_master WHERE name="$table" AND sql LIKE "%prompt_id%";',
+    );
+    if (result.isEmpty) {
+      await db.execute('ALTER TABLE $table ADD COLUMN auto_quote INTEGER;');
+
+      await db.execute('ALTER TABLE $table ADD COLUMN prompt_id TEXT;');
+      await db.execute('ALTER TABLE $table ADD COLUMN max_tokens INTEGER;');
+      await db.execute('ALTER TABLE $table ADD COLUMN timeout INTEGER;');
+    }
+  }
 
   Future<Iterable<Conversation>> getAll({required int groupId}) async {
     return (await db.query(

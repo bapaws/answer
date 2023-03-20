@@ -25,13 +25,15 @@ import 'package:answer/app/core/app/app_hive_keys.dart';
 import 'package:answer/app/core/app/app_manager.dart';
 import 'package:answer/app/data/db/app_uuid.dart';
 import 'package:answer/app/data/models/conversation.dart';
+import 'package:answer/app/providers/service_provider_manager.dart';
+import 'package:answer/app/providers/service_vendor.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 import '../data/models/group.dart';
 import '../data/models/message.dart';
-import '../data/models/service_token.dart';
 import '../data/models/value_serializer.dart';
+import '../modules/home/controllers/home_controller.dart';
 
 typedef ServiceProviderCallback = Future<void> Function(Message message);
 
@@ -40,41 +42,25 @@ class ServiceProvider {
   static const errorIdPrefix = 'error__';
 
   String id;
+  String vendorId;
+  String model;
   String name;
   String avatar;
   String? desc;
   int groupId;
-  String? officialUrl;
-  String? apiUrl;
-  String? editApiUrl;
-  String? help;
-  String? helpUrl;
-  String? hello;
   bool block;
-
-  final List<ServiceToken> tokens;
-
-  final ServiceProviderCallback? onReceived;
 
   Message? currentRequestMessage;
 
-  String? get url => editApiUrl ?? apiUrl;
-
   ServiceProvider({
     required this.id,
+    required this.vendorId,
+    required this.model,
     required this.name,
     required this.avatar,
     required this.desc,
     required this.groupId,
-    required this.officialUrl,
-    required this.apiUrl,
-    required this.help,
-    required this.helpUrl,
-    required this.tokens,
-    required this.hello,
-    this.onReceived,
     this.block = false,
-    this.editApiUrl,
   });
 
   factory ServiceProvider.fromRawJson(String str) =>
@@ -84,75 +70,55 @@ class ServiceProvider {
 
   ServiceProvider copyWith({
     String? id,
+    String? vendorId,
+    String? model,
     String? name,
     String? avatar,
     String? desc,
     int? groupId,
-    String? officialUrl,
-    String? apiUrl,
-    ServiceProviderCallback? onReceived,
-    String? help,
-    String? helpUrl,
-    String? hello,
     bool? block,
-    String? editApiUrl,
-    List<ServiceToken>? tokens,
     Map<String, dynamic>? map,
   }) =>
       ServiceProvider(
         id: id ?? map?['id'] ?? this.id,
+        vendorId: vendorId ?? map?['vendor_id'] ?? this.vendorId,
+        model: model ?? map?['model'] ?? this.model,
         name: name ?? map?['name'] ?? this.name,
         avatar: avatar ?? map?['avatar'] ?? this.avatar,
         desc: desc ?? map?['desc'] ?? this.desc,
         groupId: groupId ?? map?['group_id'] ?? this.groupId,
-        officialUrl: officialUrl ?? map?['official_url'] ?? this.officialUrl,
-        apiUrl: apiUrl ?? map?['api_url'] ?? this.apiUrl,
-        onReceived: onReceived ?? this.onReceived,
-        help: help ?? map?['help'] ?? this.help,
-        helpUrl: helpUrl ?? map?['help_url'] ?? this.helpUrl,
-        editApiUrl: editApiUrl ?? map?['edit_api_url'] ?? this.editApiUrl,
-        hello: hello ?? map?['hello'] ?? this.hello,
         block: block ?? map?['block'] ?? this.block,
-        tokens: tokens ?? this.tokens,
       );
 
   factory ServiceProvider.fromJson(Map<String, dynamic> json) {
     const ValueSerializer serializer = ValueSerializer();
     return ServiceProvider(
       id: json["id"],
+      vendorId: json["vendor_id"],
+      model: json["model"],
       name: json["name"],
       avatar: json["avatar"],
       desc: json['desc'],
       groupId: json["group_id"],
-      officialUrl: json["official_url"],
-      apiUrl: json["api_url"],
-      help: json["help"],
-      helpUrl: json["help_url"],
-      hello: json['hello'],
-      editApiUrl: json['edit_api_url'],
       block: serializer.fromJson<int>(json["block"]) == 1 ? true : false,
-      tokens: json["tokens"] == null
-          ? []
-          : List<ServiceToken>.from(
-              json["tokens"]!.map((x) => ServiceToken.fromJson(x))),
     );
   }
 
   Map<String, dynamic> toJson() => {
         "id": id,
+        "vendor_id": vendorId,
+        "model": model,
         "name": name,
         "avatar": avatar,
         "desc": desc,
         "group_id": groupId,
-        "official_url": officialUrl,
-        "api_url": apiUrl,
-        "help": help,
-        "help_url": helpUrl,
-        "hello": hello,
-        "edit_api_url": editApiUrl,
         "block": block ? 1 : 0,
-        "tokens": List<dynamic>.from(tokens.map((x) => x.toJson())),
       };
+
+  ServiceVendor get vendor =>
+      ServiceProviderManager.instance.vendors.firstWhere(
+        (element) => element.id == vendorId,
+      );
 
   @mustCallSuper
   Future<void> onInit({
@@ -160,12 +126,12 @@ class ServiceProvider {
     required Conversation conversation,
   }) async {
     bool? sent = AppManager.to.get(
-      key: AppHiveKeys.serviceProviderIsSendHello + id + conversation.id,
+      key: AppHiveKeys.serviceProviderIsSendHello + vendorId + conversation.id,
     );
     if (sent == null || !sent) {
-      if (hello != null && hello!.isNotEmpty) {
+      if (vendor.hello != null && vendor.hello!.isNotEmpty) {
         receiveTextMessage(
-          content: hello,
+          content: vendor.hello?.tr,
           conversationId: conversation.id,
         );
       }
@@ -174,12 +140,12 @@ class ServiceProvider {
         value: true,
       );
 
-      final emptyValueTokens = tokens.where(
+      final emptyValueTokens = vendor.tokens.where(
         (element) => element.value.isEmpty,
       );
-      if (tokens.isNotEmpty && emptyValueTokens.isNotEmpty) {
+      if (vendor.tokens.isNotEmpty && emptyValueTokens.isNotEmpty) {
         return receiveTextMessage(
-          content: help,
+          content: vendor.help,
           conversationId: conversation.id,
         );
       }
@@ -187,13 +153,16 @@ class ServiceProvider {
   }
 
   @mustCallSuper
-  Future<bool> send({required Message message}) async {
+  Future<bool> send({
+    required Conversation conversation,
+    required Message message,
+  }) async {
     currentRequestMessage = message;
 
-    final emptyValueTokens = tokens.where(
+    final emptyValueTokens = vendor.tokens.where(
       (element) => element.value.isEmpty,
     );
-    if (tokens.isNotEmpty && emptyValueTokens.isNotEmpty) {
+    if (vendor.tokens.isNotEmpty && emptyValueTokens.isNotEmpty) {
       receiveErrorMessage(
         error: 'must_type_tokens'.trParams(
           {
@@ -210,7 +179,7 @@ class ServiceProvider {
   }
 
   Future<void> receiveLoadingMessage({required Message requestMessage}) async {
-    onReceived?.call(
+    HomeController.to.onReceived(
       Message(
         id: AppUuid.value,
         type: MessageType.loading,
@@ -229,7 +198,7 @@ class ServiceProvider {
     required Message requestMessage,
     dynamic error,
   }) async {
-    onReceived?.call(
+    HomeController.to.onReceived(
       Message(
         id: AppUuid.value,
         type: MessageType.error,
@@ -251,7 +220,7 @@ class ServiceProvider {
     String? conversationId,
   }) async {
     assert(requestMessage != null || conversationId != null);
-    onReceived?.call(
+    HomeController.to.onReceived(
       Message(
         id: AppUuid.value,
         type: MessageType.text,
@@ -263,6 +232,25 @@ class ServiceProvider {
         createAt: DateTime.now(),
         requestMessage: requestMessage,
         conversationId: conversationId ?? requestMessage?.conversationId,
+      ),
+    );
+  }
+
+  Future<void> receiveSystemMessage({
+    String? content,
+    String? conversationId,
+  }) async {
+    HomeController.to.onReceived(
+      Message(
+        id: AppUuid.value,
+        type: MessageType.system,
+        serviceAvatar: avatar,
+        serviceName: name,
+        serviceId: id,
+        content: content?.trim(),
+        fromType: MessageFromType.receive,
+        createAt: DateTime.now(),
+        conversationId: conversationId,
       ),
     );
   }

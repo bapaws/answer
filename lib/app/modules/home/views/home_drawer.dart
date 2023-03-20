@@ -1,9 +1,10 @@
-import 'package:answer/app/core/app/app_progress_hud.dart';
+import 'package:answer/app/data/models/conversation.dart';
 import 'package:answer/app/modules/home/controllers/home_controller.dart';
-import 'package:answer/app/modules/home/controllers/home_drawer_controller.dart';
 import 'package:answer/app/views/chat_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
+import '../../../core/app/app_toast.dart';
 
 class HomeDrawer extends GetView<HomeController> {
   const HomeDrawer({Key? key}) : super(key: key);
@@ -53,8 +54,33 @@ class HomeDrawer extends GetView<HomeController> {
               content: Text('conversations'.tr),
               color: Theme.of(context).dividerColor,
             ),
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                vertical: 8,
+                horizontal: 16,
+              ),
+              child: OutlinedButton.icon(
+                onPressed: () async {
+                  final conv = await controller.changeConversation();
+                  if (conv?.displayName != null) {
+                    AppToast.show(
+                      msg: 'new_chat_created'.trParams(
+                        {'name': conv!.displayName!},
+                      ),
+                    );
+                  }
+                },
+                icon: const Icon(
+                  Icons.add,
+                ),
+                label: Text(
+                  'new_chat'.tr,
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+              ),
+            ),
             for (int index = 0;
-                index < controller.homeDrawerControllers.length;
+                index < controller.conversations.length;
                 index++)
               _buildConversationItemView(context, index),
           ],
@@ -85,13 +111,16 @@ class HomeDrawer extends GetView<HomeController> {
     BuildContext context,
     int index,
   ) {
-    final HomeDrawerController homeDrawerController =
-        controller.homeDrawerControllers[index];
+    final Conversation conversation = controller.conversations[index];
+    final isCurrent = controller.currentConversationIndex == index;
     return GestureDetector(
       onTap: () {
-        Scaffold.of(context).openDrawer();
-        Scaffold.of(context).openEndDrawer();
         controller.changeConversation(index: index);
+
+        Future.delayed(const Duration(milliseconds: 200), () {
+          Scaffold.of(context).openDrawer();
+          Scaffold.of(context).openEndDrawer();
+        });
       },
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -101,29 +130,18 @@ class HomeDrawer extends GetView<HomeController> {
               color: Theme.of(context).scaffoldBackgroundColor,
             ),
           ),
-          color: Theme.of(context).cardColor,
+          color: isCurrent
+              ? Theme.of(context).primaryColorDark
+              : Theme.of(context).cardColor,
         ),
         child: Row(
           children: [
             Expanded(
-              child: TextField(
-                style: Theme.of(context).textTheme.titleMedium,
-                focusNode: homeDrawerController.focusNode,
-                controller: homeDrawerController.textEditingController,
-                onSubmitted: (value) {
-                  homeDrawerController.editing = false;
-
-                  controller.updateConversation(
-                    id: homeDrawerController.conversation.id,
-                    name: value,
-                  );
-                },
-                decoration: InputDecoration(
-                  hintText: '',
-                  isCollapsed: true,
-                  border: InputBorder.none,
-                  enabled: homeDrawerController.editing,
-                ),
+              child: Text(
+                conversation.displayName ?? 'new_chat'.tr,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: isCurrent ? Colors.white : null,
+                    ),
               ),
             ),
             IconButton(
@@ -134,31 +152,13 @@ class HomeDrawer extends GetView<HomeController> {
               ),
               iconSize: 18,
               onPressed: () {
-                homeDrawerController.editing = true;
-                controller.update();
-
-                Future.delayed(const Duration(milliseconds: 100), () {
-                  homeDrawerController.focusNode.requestFocus();
-                });
+                controller.toConversation(
+                  conversation: conversation,
+                );
               },
-              icon: const Icon(
-                Icons.edit_outlined,
-              ),
-            ),
-            IconButton(
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints.tightFor(
-                width: 28,
-                height: 28,
-              ),
-              iconSize: 18,
-              onPressed: () async {
-                AppProgressHud.show();
-                await controller.deleteConversation(index);
-                AppProgressHud.dismiss();
-              },
-              icon: const Icon(
-                Icons.delete_outline,
+              icon: Icon(
+                Icons.more_horiz,
+                color: isCurrent ? Colors.white : null,
               ),
             ),
           ],

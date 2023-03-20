@@ -1,6 +1,8 @@
+import 'package:answer/app/core/app/app_toast.dart';
 import 'package:answer/app/data/db/app_database.dart';
 import 'package:answer/app/data/models/service_token.dart';
 import 'package:answer/app/providers/service_provider_manager.dart';
+import 'package:answer/app/providers/service_vendor.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -9,13 +11,19 @@ import '../../../core/app/app_controller_mixin.dart';
 import '../../../providers/service_provider.dart';
 
 class ServiceController extends GetxController with AppControllerMixin {
-  late final String serviceId = Get.arguments;
+  late final String serviceId = Get.arguments ?? Get.parameters['service_id'];
   ServiceProvider? provider;
+
+  ServiceVendor? vendor;
 
   final apiUrlFocusNode = FocusNode();
   final apiUrlTextEditingController = TextEditingController();
   final Map<String, TextEditingController> textEditingControllers = {};
   final Map<String, FocusNode> focusNodes = {};
+
+  late final modelTextEditing = TextEditingController(
+    text: provider?.model,
+  );
 
   static const obscureText = '••••••';
 
@@ -23,20 +31,23 @@ class ServiceController extends GetxController with AppControllerMixin {
 
   @override
   Future<void> onReady() async {
-    provider = await ServiceProviderManager.to.get(
+    provider = await ServiceProviderManager.instance.get(
       id: serviceId,
     );
-    if (provider?.url != null) {
-      apiUrlTextEditingController.text = provider!.url!;
+    vendor = ServiceProviderManager.instance.vendors.firstWhereOrNull(
+      (element) => element.id == provider?.vendorId,
+    );
+    if (vendor?.url != null) {
+      apiUrlTextEditingController.text = vendor!.url!;
     }
-    if (provider?.tokens != null) {
-      for (final item in provider!.tokens) {
+    if (vendor?.tokens != null) {
+      for (final item in vendor!.tokens) {
         textEditingControllers[item.id] = TextEditingController(
           text: item.value.isNotEmpty ? obscureText : '',
         );
         focusNodes[item.id] = FocusNode();
       }
-      final first = provider?.tokens.firstOrNull;
+      final first = vendor?.tokens.firstOrNull;
       if (first?.value.isEmpty == true) {
         focusNodes[first!.id]?.requestFocus();
       }
@@ -68,7 +79,7 @@ class ServiceController extends GetxController with AppControllerMixin {
 
   void onEdited() {
     editing = true;
-    for (final token in provider!.tokens) {
+    for (final token in vendor!.tokens) {
       textEditingControllers[token.id]?.text = token.value;
     }
     update();
@@ -83,25 +94,32 @@ class ServiceController extends GetxController with AppControllerMixin {
   }
 
   Future<void> onSaved() async {
-    if (provider == null) return;
+    if (provider == null && vendor == null) return;
 
-    for (int index = 0; index < provider!.tokens.length; index++) {
-      final token = provider!.tokens[index];
-      provider?.tokens[index] = token.copyWith(
+    if (modelTextEditing.text != provider?.model) {
+      provider = provider?.copyWith(model: modelTextEditing.text);
+      await AppDatabase.instance.serviceProvidersDao.create(provider!);
+    }
+
+    for (int index = 0; index < vendor!.tokens.length; index++) {
+      final token = vendor!.tokens[index];
+      vendor?.tokens[index] = token.copyWith(
         value: textEditingControllers[token.id]?.text,
       );
     }
-    provider?.editApiUrl = apiUrlTextEditingController.text;
+    vendor?.editApiUrl = apiUrlTextEditingController.text;
 
     editing = false;
 
     update();
 
-    await AppDatabase.instance.serviceProvidersDao.create(provider!);
+    await AppDatabase.instance.serviceVendorsDao.create(vendor!);
+
+    AppToast.show(msg: 'saved_successfully'.tr);
   }
 
   Future<void> onBlocked(bool value) async {
-    await ServiceProviderManager.to.block(provider, value);
+    await ServiceProviderManager.instance.block(provider, value);
     update();
   }
 }

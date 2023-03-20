@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:answer/app/data/db/prompt_dao.dart';
 import 'package:answer/app/data/db/service_providers_dao.dart';
 import 'package:answer/app/data/db/service_tokens_dao.dart';
+import 'package:answer/app/data/db/service_vendors_dao.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
@@ -21,7 +23,9 @@ class AppDatabase {
   late final MessagesDao messagesDao = MessagesDao(database);
   late final ServiceProvidersDao serviceProvidersDao =
       ServiceProvidersDao(database);
+  late final ServiceVendorsDao serviceVendorsDao = ServiceVendorsDao(database);
   late final ServiceTokensDao serviceTokensDao = ServiceTokensDao(database);
+  late final PromptDao promptDao = PromptDao(database);
 
   static Future<void> initialize({
     required String dbName,
@@ -37,7 +41,7 @@ class AppDatabase {
       path,
       onCreate: instance._onCreate,
       onUpgrade: instance._onUpgrade,
-      version: 2,
+      version: 3,
     );
   }
 
@@ -45,9 +49,19 @@ class AppDatabase {
     ConversationsDao.onCreate(db);
     ServiceProvidersDao.onCreate(db);
     ServiceTokensDao.onCreate(db);
+    ServiceVendorsDao.onCreate(db);
+    PromptDao.onCreate(db);
   }
 
   FutureOr<void> _onUpgrade(Database db, int oldVersion, int newVersion) {
     ServiceProvidersDao.onUpgrade(db, oldVersion, newVersion);
+    MessagesDao.onUpgrade(db, oldVersion, newVersion);
+    ConversationsDao.onUpgrade(db, oldVersion, newVersion);
+
+    ServiceVendorsDao.onCreate(db);
+    ServiceVendorsDao.onUpgrade(db, oldVersion, newVersion);
+
+    PromptDao.onCreate(db);
+    PromptDao.onUpgrade(db, oldVersion, newVersion);
   }
 }

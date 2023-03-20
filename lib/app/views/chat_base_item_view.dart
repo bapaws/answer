@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:answer/app/core/app/app_toast.dart';
 import 'package:answer/app/views/chat_avatar.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -13,11 +13,14 @@ abstract class ChatBaseItemView extends StatelessWidget {
   final Message message;
   final ValueChanged<Message>? onRetried;
   final ValueChanged<Message>? onAvatarClicked;
+  final ValueChanged<Message>? onQuoted;
+
   const ChatBaseItemView({
     Key? key,
     required this.message,
     this.onRetried,
     required this.onAvatarClicked,
+    this.onQuoted,
   }) : super(key: key);
 
   @override
@@ -95,13 +98,8 @@ abstract class ChatBaseItemView extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints.tightFor(
-                        width: 32,
-                        height: 32,
-                      ),
-                      iconSize: 16,
+                    buildButton(
+                      context: context,
                       onPressed: () async {
                         await Clipboard.setData(
                           ClipboardData(
@@ -112,13 +110,8 @@ abstract class ChatBaseItemView extends StatelessWidget {
                       },
                       icon: const Icon(Icons.copy),
                     ),
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints.tightFor(
-                        width: 32,
-                        height: 32,
-                      ),
-                      iconSize: 16,
+                    buildButton(
+                      context: context,
                       onPressed: () {
                         if (message.type == MessageType.text) {
                           Share.share(
@@ -129,6 +122,16 @@ abstract class ChatBaseItemView extends StatelessWidget {
                       },
                       icon: const Icon(Icons.share),
                     ),
+                    buildButton(
+                      context: context,
+                      onPressed: () {
+                        onQuoted?.call(message);
+                      },
+                      icon: const Icon(
+                        Icons.format_quote_rounded,
+                        size: 20,
+                      ),
+                    ),
                   ],
                 ),
             ],
@@ -138,6 +141,23 @@ abstract class ChatBaseItemView extends StatelessWidget {
           width: avatarWidth,
         ),
       ],
+    );
+  }
+
+  Widget buildButton({
+    required BuildContext context,
+    required VoidCallback onPressed,
+    required Widget icon,
+  }) {
+    return IconButton(
+      padding: EdgeInsets.zero,
+      constraints: const BoxConstraints.tightFor(
+        width: 32,
+        height: 32,
+      ),
+      iconSize: 16,
+      onPressed: onPressed,
+      icon: icon,
     );
   }
 
