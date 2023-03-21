@@ -41,19 +41,6 @@ class ChatAvatar extends StatelessWidget {
       } else {
         widget = Image.asset(path!);
       }
-    } else if (path != null && path!.startsWith('MaterialIcons_0x')) {
-      final data = int.tryParse(
-        path!.replaceAll('MaterialIcons_0x', ''),
-        radix: 16,
-      );
-      if (data != null) {
-        widget = Icon(
-          IconData(
-            data,
-            fontFamily: 'MaterialIcons',
-          ),
-        );
-      }
     } else if (path != null && path!.startsWith('http')) {
       widget = CachedNetworkImage(
         imageUrl: path!,
