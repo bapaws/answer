@@ -14,6 +14,7 @@ class ServiceVendorsDao {
       CREATE TABLE IF NOT EXISTS ${ServiceVendorsDao.table} (
         id TEXT NOT NULL PRIMARY KEY,
         name TEXT,
+        avatar TEXT,
         api_url TEXT,
         edit_api_url TEXT,
         official_url TEXT,
@@ -31,6 +32,10 @@ class ServiceVendorsDao {
     int oldVersion,
     int newVersion,
   ) async {}
+
+  Future<Iterable<ServiceVendor>> getAll() async {
+    return (await db.query(table)).map(ServiceVendor.fromJson);
+  }
 
   Future<ServiceVendor?> get({required String id}) async {
     return (await db.query(table, where: 'id = ?', whereArgs: [id]))

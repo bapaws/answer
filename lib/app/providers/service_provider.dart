@@ -25,6 +25,7 @@ import 'package:answer/app/core/app/app_hive_keys.dart';
 import 'package:answer/app/core/app/app_manager.dart';
 import 'package:answer/app/data/db/app_uuid.dart';
 import 'package:answer/app/data/models/conversation.dart';
+import 'package:answer/app/data/models/service_token.dart';
 import 'package:answer/app/providers/service_provider_manager.dart';
 import 'package:answer/app/providers/service_vendor.dart';
 import 'package:flutter/cupertino.dart';
@@ -120,6 +121,11 @@ class ServiceProvider {
         (element) => element.id == vendorId,
       );
 
+  Iterable<ServiceToken> get tokens =>
+      ServiceProviderManager.instance.tokens.where(
+        (element) => element.vendorId == vendorId,
+      );
+
   @mustCallSuper
   Future<void> onInit({
     required Group group,
@@ -140,10 +146,10 @@ class ServiceProvider {
         value: true,
       );
 
-      final emptyValueTokens = vendor.tokens.where(
+      final emptyValueTokens = tokens.where(
         (element) => element.value.isEmpty,
       );
-      if (vendor.tokens.isNotEmpty && emptyValueTokens.isNotEmpty) {
+      if (tokens.isNotEmpty && emptyValueTokens.isNotEmpty) {
         return receiveTextMessage(
           content: vendor.help,
           conversationId: conversation.id,
@@ -159,10 +165,10 @@ class ServiceProvider {
   }) async {
     currentRequestMessage = message;
 
-    final emptyValueTokens = vendor.tokens.where(
+    final emptyValueTokens = tokens.where(
       (element) => element.value.isEmpty,
     );
-    if (vendor.tokens.isNotEmpty && emptyValueTokens.isNotEmpty) {
+    if (tokens.isNotEmpty && emptyValueTokens.isNotEmpty) {
       receiveErrorMessage(
         error: 'must_type_tokens'.trParams(
           {
@@ -243,7 +249,7 @@ class ServiceProvider {
     HomeController.to.onReceived(
       Message(
         id: AppUuid.value,
-        type: MessageType.system,
+        type: MessageType.vendor,
         serviceAvatar: avatar,
         serviceName: name,
         serviceId: id,

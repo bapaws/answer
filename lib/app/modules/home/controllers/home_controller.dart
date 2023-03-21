@@ -164,7 +164,12 @@ class HomeController extends GetxController
 
   void onAvatarClicked(Message message) {
     focusNode.unfocus();
-    if (message.type != MessageType.system &&
+    if (message.type == MessageType.vendor) {
+      Get.toNamed(
+        Routes.vendor,
+        arguments: message.serviceId,
+      );
+    } else if (message.type != MessageType.vendor &&
         message.fromType != MessageFromType.send) {
       Get.toNamed(
         Routes.service,
@@ -188,6 +193,10 @@ class HomeController extends GetxController
   }
 
   Future<Conversation?> changeConversation({int? index}) async {
+    if (focusNode.hasFocus) {
+      focusNode.unfocus();
+    }
+
     if (index == null || index >= conversations.length) {
       await _createConversation();
       index = conversations.length - 1;
@@ -197,6 +206,7 @@ class HomeController extends GetxController
     }
 
     currentConversationIndex = index;
+    currentQuotedMessage = null;
 
     messages.clear();
     final list = await AppDatabase.instance.messagesDao.get(

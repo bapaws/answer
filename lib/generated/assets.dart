@@ -8,4 +8,8 @@ class Assets {
   static const String imagesAiAvatar = 'assets/images/ai_avatar.png';
   static const String imagesLogoGreen = 'assets/images/logo-green.png';
   static const String imagesLogoWhite = 'assets/images/logo-white.png';
+  static const String imagesOpenAi = 'assets/images/open_ai.svg';
+  static const String imagesOpenAiChatGpt =
+      'assets/images/open_ai_chat_gpt.svg';
+  static const String imagesOpenAiGpt4 = 'assets/images/open_ai_gpt_4.svg';
 }

@@ -5,6 +5,7 @@ import 'package:answer/app/data/db/app_database.dart';
 import 'package:answer/app/data/models/message.dart';
 import 'package:answer/app/providers/open_ai/chat_gpt_model.dart';
 import 'package:answer/app/providers/service_provider.dart';
+import 'package:answer/app/providers/service_provider_manager.dart';
 import 'package:dio/dio.dart';
 
 import '../../data/models/conversation.dart';
@@ -59,7 +60,10 @@ class ChatGpt extends ServiceProvider {
           receiveTimeout: Duration(seconds: conversation.timeout),
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${vendor.tokens.first.value}',
+            'Authorization':
+                'Bearer ${ServiceProviderManager.instance.getTokens(
+                      vendorId: vendorId,
+                    ).first.value}',
           },
         ),
       );
