@@ -15,6 +15,7 @@ class HomeDrawer extends GetView<HomeController> {
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       child: GetBuilder<HomeController>(
         builder: (controller) => ListView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           children: [
             _buildItemView(
               context: context,

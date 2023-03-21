@@ -20,12 +20,9 @@ class ServiceTokensDao {
     ''');
   }
 
-  Future<Iterable<ServiceToken>> getAll({
-    required String providerId,
-  }) async {
+  Future<Iterable<ServiceToken>> getAll() async {
     List<Map<String, Object?>> list = await db.rawQuery(
-      'SELECT * FROM $table WHERE service_provider_id = ?',
-      [providerId],
+      'SELECT * FROM $table',
     );
     return list.map((e) => ServiceToken.fromJson(e));
   }

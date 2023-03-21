@@ -9,6 +9,7 @@ abstract class Routes {
   static const conversation = _Paths.conversation;
   static const prompt = _Paths.prompt;
   static const newPrompt = _Paths.newPrompt;
+  static const vendor = _Paths.vendor;
 }
 
 abstract class _Paths {
@@ -19,4 +20,5 @@ abstract class _Paths {
   static const conversation = '/conversation';
   static const prompt = '/prompt';
   static const newPrompt = '/new-prompt';
+  static const vendor = '/vendor';
 }

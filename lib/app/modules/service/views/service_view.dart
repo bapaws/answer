@@ -1,14 +1,14 @@
 import 'package:answer/app/providers/open_ai/chat_gpt.dart';
+import 'package:answer/app/routes/app_pages.dart';
 import 'package:answer/app/views/app_cell.dart';
 import 'package:answer/app/views/app_section.dart';
+import 'package:answer/app/views/chat_avatar.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../../core/app/app_view_mixin.dart';
 import '../controllers/service_controller.dart';
 import 'service_info.dart';
-import 'service_token_item_view.dart';
 
 class ServiceView extends StatelessWidget with AppViewMixin<ServiceController> {
   static const titleWidth = 80.0;
@@ -94,91 +94,25 @@ class ServiceView extends StatelessWidget with AppViewMixin<ServiceController> {
           height: 8,
         ),
         AppSection(title: Text('vendor'.tr)),
-        AppCell(
+        AppCell.navigation(
+          leading: ChatAvatar(
+            path: controller.vendor?.avatar,
+          ),
           title: SizedBox(
             width: 80,
             child: Text(
-              'vendor'.tr,
+              controller.vendor?.name ?? '',
               style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
-          detail: Text(controller.vendor?.name ?? ''),
-        ),
-        AppCell(
-          title: SizedBox(
-            width: 80,
-            child: Text(
-              'official_url'.tr,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          ),
-          detail: Text(controller.vendor?.officialUrl ?? ''),
           hiddenDivider: true,
           onPressed: () {
-            if (controller.vendor?.officialUrl != null) {
-              launchUrlString(controller.vendor!.officialUrl!);
-            }
+            Get.toNamed(
+              Routes.vendor,
+              arguments: controller.vendor?.id,
+            );
           },
         ),
-        const SizedBox(
-          height: 8,
-        ),
-        if (controller.vendor?.url != null)
-          AppCell(
-            title: SizedBox(
-              width: 80,
-              child: Text(
-                'API URL',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            detail: TextField(
-              minLines: 1,
-              maxLines: 1,
-              autocorrect: false,
-              enabled: controller.editing,
-              focusNode: controller.apiUrlFocusNode,
-              controller: controller.apiUrlTextEditingController,
-              style: Theme.of(context).textTheme.bodyMedium,
-              decoration: InputDecoration.collapsed(
-                hintText: 'type_your_tokens'.trParams({'name': 'API URL'}),
-              ),
-              textInputAction: TextInputAction.next,
-            ),
-            hiddenDivider: true,
-          ),
-        const SizedBox(
-          height: 8,
-        ),
-        for (final item in controller.vendor!.tokens)
-          ServiceTokenItemView(
-            item: item,
-            textEditingController: controller.textEditingControllers[item.id]!,
-            focusNode: controller.focusNodes[item.id]!,
-            onObscured: () {
-              controller.onObscured(item);
-            },
-            enabled: controller.editing,
-            obscured: controller.isObscure(item),
-            textInputAction: TextInputAction.next,
-          ),
-        const SizedBox(
-          height: 8,
-        ),
-        if (controller.vendor?.helpUrl?.isNotEmpty == true)
-          AppCell.navigation(
-            title: SizedBox(
-              width: titleWidth,
-              child: Text(
-                'Get Help',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-            ),
-            hiddenDivider: true,
-            onPressed: () {
-              launchUrlString(controller.vendor!.helpUrl!);
-            },
-          ),
       ],
     );
   }

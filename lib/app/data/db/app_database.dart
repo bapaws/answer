@@ -41,27 +41,27 @@ class AppDatabase {
       path,
       onCreate: instance._onCreate,
       onUpgrade: instance._onUpgrade,
-      version: 3,
+      version: 5,
     );
   }
 
   FutureOr<void> _onCreate(Database db, int version) async {
-    ConversationsDao.onCreate(db);
-    ServiceProvidersDao.onCreate(db);
+    PromptDao.onCreate(db);
     ServiceTokensDao.onCreate(db);
     ServiceVendorsDao.onCreate(db);
-    PromptDao.onCreate(db);
+    ServiceProvidersDao.onCreate(db);
+    ConversationsDao.onCreate(db);
   }
 
   FutureOr<void> _onUpgrade(Database db, int oldVersion, int newVersion) {
-    ServiceProvidersDao.onUpgrade(db, oldVersion, newVersion);
-    MessagesDao.onUpgrade(db, oldVersion, newVersion);
-    ConversationsDao.onUpgrade(db, oldVersion, newVersion);
-
     ServiceVendorsDao.onCreate(db);
     ServiceVendorsDao.onUpgrade(db, oldVersion, newVersion);
 
     PromptDao.onCreate(db);
     PromptDao.onUpgrade(db, oldVersion, newVersion);
+
+    ServiceProvidersDao.onUpgrade(db, oldVersion, newVersion);
+    MessagesDao.onUpgrade(db, oldVersion, newVersion);
+    ConversationsDao.onUpgrade(db, oldVersion, newVersion);
   }
 }

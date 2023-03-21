@@ -27,6 +27,15 @@ class HomeView extends StatelessWidget with AppViewMixin<HomeController> {
         ),
       ),
       elevation: 0,
+      leading: Builder(builder: (context) {
+        return IconButton(
+          onPressed: () {
+            Scaffold.of(context).openDrawer();
+            controller.focusNode.unfocus();
+          },
+          icon: const Icon(Icons.menu),
+        );
+      }),
       title: Text(
         controller.currentConversation?.displayName ?? 'new_chat'.tr,
         overflow: TextOverflow.ellipsis,

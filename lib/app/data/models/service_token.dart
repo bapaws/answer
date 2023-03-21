@@ -12,25 +12,25 @@ class ServiceToken {
     required this.id,
     required this.name,
     this.value = '',
-    required this.serviceProviderId,
+    required this.vendorId,
   });
 
   final String id;
   final String name;
   final String value;
-  final String serviceProviderId;
+  final String vendorId;
 
   ServiceToken copyWith({
     String? id,
     String? name,
     String? value,
-    String? serviceProviderId,
+    String? vendorId,
   }) =>
       ServiceToken(
         id: id ?? this.id,
         name: name ?? this.name,
         value: value ?? this.value,
-        serviceProviderId: serviceProviderId ?? this.serviceProviderId,
+        vendorId: vendorId ?? this.vendorId,
       );
 
   factory ServiceToken.fromRawJson(String str) =>
@@ -42,13 +42,13 @@ class ServiceToken {
         id: json["id"],
         name: json["name"],
         value: json["value"],
-        serviceProviderId: json["service_provider_id"],
+        vendorId: json["service_provider_id"],
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
         "value": value,
-        "service_provider_id": serviceProviderId,
+        "service_provider_id": vendorId,
       };
 }

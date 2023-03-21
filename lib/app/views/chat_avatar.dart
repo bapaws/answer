@@ -12,17 +12,17 @@ class ChatAvatar extends StatelessWidget {
   final BoxFit? fit;
   final EdgeInsetsGeometry? padding;
   final Color? backgroundColor;
-  final ColorFilter? colorFilter;
+  final Color? color;
   const ChatAvatar({
     Key? key,
     required this.path,
     this.width = 44,
     this.height = 44,
-    this.radius,
+    this.radius = const Radius.circular(8),
     this.fit = BoxFit.cover,
     this.padding,
     this.backgroundColor,
-    this.colorFilter,
+    this.color,
   }) : super(key: key);
 
   @override
@@ -34,11 +34,25 @@ class ChatAvatar extends StatelessWidget {
           path!,
           width: width - (padding?.horizontal ?? 0),
           height: height - (padding?.vertical ?? 0),
-          colorFilter: colorFilter,
+          colorFilter:
+              color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
           placeholderBuilder: (context) => _buildPlaceholder(context),
         );
       } else {
         widget = Image.asset(path!);
+      }
+    } else if (path != null && path!.startsWith('MaterialIcons_0x')) {
+      final data = int.tryParse(
+        path!.replaceAll('MaterialIcons_0x', ''),
+        radix: 16,
+      );
+      if (data != null) {
+        widget = Icon(
+          IconData(
+            data,
+            fontFamily: 'MaterialIcons',
+          ),
+        );
       }
     } else if (path != null && path!.startsWith('http')) {
       widget = CachedNetworkImage(

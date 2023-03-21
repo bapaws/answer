@@ -12,6 +12,8 @@ import '../modules/service/bindings/service_binding.dart';
 import '../modules/service/views/service_view.dart';
 import '../modules/settings/bindings/settings_binding.dart';
 import '../modules/settings/views/settings_view.dart';
+import '../modules/vendor/bindings/vendor_binding.dart';
+import '../modules/vendor/views/vendor_view.dart';
 
 part 'app_routes.dart';
 
@@ -51,6 +53,11 @@ class AppPages {
       page: () => const NewPromptView(),
       binding: NewPromptBinding(),
       fullscreenDialog: true,
+    ),
+    GetPage(
+      name: _Paths.vendor,
+      page: () => const VendorView(),
+      binding: VendorBinding(),
     ),
   ];
 }
