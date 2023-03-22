@@ -1,10 +1,1 @@
-[
-  {
-    "name": "API Key",
-    "service_provider_id": "open_ai_chat_gpt"
-  },
-  {
-    "name": "Session Token",
-    "service_provider_id": "open_ai_chat_gpt_secret_api"
-  }
-]
+W3siaWQiOiJjaGF0X2dwdF9hcGlfa2V5IiwibmFtZSI6IkFQSSBLZXkiLCJzZXJ2aWNlX3Byb3ZpZGVyX2lkIjoib3Blbl9haV9jaGF0X2dwdCJ9XQ==

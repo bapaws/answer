@@ -41,7 +41,7 @@ class AppDatabase {
       path,
       onCreate: instance._onCreate,
       onUpgrade: instance._onUpgrade,
-      version: 6,
+      version: 3,
     );
   }
 
@@ -54,9 +54,12 @@ class AppDatabase {
   }
 
   FutureOr<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    await ServiceVendorsDao.onCreate(db);
+    if (oldVersion < 3) {
+      await ServiceVendorsDao.onCreate(db);
+      await PromptDao.onCreate(db);
+    }
+    await ServiceTokensDao.onUpgrade(db, oldVersion, newVersion);
     await ServiceVendorsDao.onUpgrade(db, oldVersion, newVersion);
-    await PromptDao.onCreate(db);
     await PromptDao.onUpgrade(db, oldVersion, newVersion);
     await ServiceProvidersDao.onUpgrade(db, oldVersion, newVersion);
     await MessagesDao.onUpgrade(db, oldVersion, newVersion);

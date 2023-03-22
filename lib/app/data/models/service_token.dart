@@ -41,7 +41,7 @@ class ServiceToken {
   factory ServiceToken.fromJson(Map<String, dynamic> json) => ServiceToken(
         id: json["id"],
         name: json["name"],
-        value: json["value"],
+        value: json["value"] ?? '',
         vendorId: json["service_provider_id"],
       );
 
