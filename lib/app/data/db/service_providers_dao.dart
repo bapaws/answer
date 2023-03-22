@@ -1,5 +1,3 @@
-import 'package:answer/app/data/db/service_vendors_dao.dart';
-import 'package:answer/app/providers/service_provider_manager.dart';
 import 'package:collection/collection.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -51,15 +49,6 @@ class ServiceProvidersDao {
     if (vendorId.isEmpty) {
       await db.execute('ALTER TABLE $table ADD COLUMN vendor_id TEXT;');
       await db.execute('ALTER TABLE $table ADD COLUMN model TEXT;');
-
-      final list = await db.rawQuery(
-        'SELECT id, edit_api_url FROM ${ServiceProvidersDao.table}',
-      );
-      if (list.isNotEmpty) {
-        final json = ServiceProviderManager.instance.vendors.first.toJson();
-        json['edit_api_url'] = list.first['edit_api_url'];
-        await db.insert(ServiceVendorsDao.table, json);
-      }
     }
   }
 

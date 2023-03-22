@@ -4,10 +4,8 @@ import 'package:answer/app/modules/home/controllers/home_controller.dart';
 import 'package:answer/app/providers/open_ai/chat_gpt_3.dart';
 import 'package:answer/app/providers/service_provider.dart';
 import 'package:answer/app/providers/service_vendor.dart';
-import 'package:collection/collection.dart';
 import 'package:get/get.dart';
 
-import '../../flavors/build_config.dart';
 import '../core/app/app_hive_keys.dart';
 import '../core/app/app_manager.dart';
 import '../data/db/app_database.dart';
@@ -29,50 +27,22 @@ class ServiceProviderManager extends GetxController {
     // ),
   ];
 
-  late final vendors = <ServiceVendor>[
-    ServiceVendor(
-      id: 'open_ai_chat_gpt',
-      name: 'OpenAI',
-      avatar: 'assets/images/open_ai.svg',
-      officialUrl: 'https://openai.com/',
-      apiUrl: BuildConfig.instance.config.openAIUrl ??
-          'https://api.openai.com/v1/chat/completions',
-      hello: 'open_ai_hello',
-      help: 'chat_gpt_help',
-      helpUrl: 'https://www.bapaws.com/answer/help/chat_gpt.html',
-    ),
-  ];
+  late final vendors = <ServiceVendor>[];
 
-  late final tokens = [
-    ServiceToken(
-      id: 'chat_gpt_api_key',
-      name: 'API Key',
-      value: BuildConfig.instance.config.openAIApiKey ?? '',
-      vendorId: 'open_ai_chat_gpt',
-    ),
-  ];
+  late final tokens = <ServiceToken>[];
 
   static Future<void> initialize() async {
     for (final item in instance.providers) {
       await instance._updateProvider(item);
     }
+    instance.vendors.addAll(
+      await AppDatabase.instance.serviceVendorsDao.getAll(),
+    );
+    instance.tokens.addAll(
+      await AppDatabase.instance.serviceTokensDao.getAll(),
+    );
 
-    final vendors = await AppDatabase.instance.serviceVendorsDao.getAll();
-    for (int index = 0; index < instance.vendors.length; index++) {
-      final item = instance.vendors[index];
-
-      final vendor = vendors.firstWhereOrNull(
-        (element) => element.id == item.id,
-      );
-      if (vendor != null) item.editApiUrl = vendor.editApiUrl;
-    }
-
-    final tokens = await AppDatabase.instance.serviceTokensDao.getAll();
-    for (int index = 0; index < instance.tokens.length; index++) {
-      final item = instance.tokens[index];
-      final token = tokens.firstWhereOrNull((e) => e.id == item.id);
-      if (token != null) instance.tokens[index] = token;
-    }
+    print(instance.tokens);
   }
 
   Future<void> _updateProvider(ServiceProvider? provider) async {
@@ -111,6 +81,18 @@ class ServiceProviderManager extends GetxController {
 
   Iterable<ServiceToken> getTokens({required String vendorId}) {
     return tokens.where((element) => element.vendorId == vendorId);
+  }
+
+  Future<void> saveToken(ServiceToken token) async {
+    final index = tokens.indexWhere((element) => element.id == token.id);
+    if (index != -1) {
+      tokens[index] = token;
+    } else {
+      tokens.add(token);
+    }
+    await AppDatabase.instance.serviceTokensDao.create(
+      token,
+    );
   }
 
   Future<void> block(ServiceProvider? provider, bool isBlocked) async {
