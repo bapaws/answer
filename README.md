@@ -20,7 +20,7 @@ Chat Answer is an open source app based on ChatGPT.
 	<img src="img/app-store.svg" alt="">
 </a>
 
-![ios-screen](img/ios-screen.png)
+![ios-screen-dark](img/ios-screen-dark.png)![ios-screen-light](img/ios-screen-light.png)
 
 ## Android App
 
@@ -28,7 +28,7 @@ Chat Answer is an open source app based on ChatGPT.
 	<img src="img/google-play-badge.png" alt="" height=80>
 </a>
 
-![android-screen](img/android-screen.png)
+![android-screen-dark](img/android-screen-dark.png)![android-screen-light](img/android-screen-light.png)
 
 ## Roadmap
 
@@ -39,11 +39,13 @@ Chat Answer is an open source app based on ChatGPT.
 - [x] Messages local storage
 - [x] Support markdown
 - [x] Support code block highlight
-- [ ] Support conversation settings
+- [x] Support conversation settings
+- [x] Support quote message
+- [x] Support add prompts
+- [x] Support system message
 - [ ] Support delete message
 - [ ] App settings
 - [ ] Support for code replication
-- [ ] Support system message
 - [ ] Support more chat scenarios
 
 ## License

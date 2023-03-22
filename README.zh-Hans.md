@@ -20,7 +20,7 @@
 	<img src="img/app-store.svg" alt="">
 </a>
 
-![ios-screen](img/ios-screen.png)
+![ios-screen-dark](img/ios-screen-dark.png)![ios-screen-light](img/ios-screen-light.png)
 
 ## Android App
 
@@ -28,7 +28,7 @@
 	<img src="img/google-play-badge.png" alt="" height=80>
 </a>
 
-![android-screen](img/android-screen.png)
+![android-screen-dark](img/android-screen-dark.png)![android-screen-light](img/android-screen-light.png)
 
 ## Roadmap
 
@@ -39,11 +39,13 @@
 - [x] 消息本地存储
 - [x] 消息支持 Markdown
 - [x] 支持代码块高亮显示
-- [ ] 支持会话设置
+- [x] 支持会话设置
+- [x] 支持引用消息设置上下文
+- [x] 支持系统角色设置
+- [x] 支持系统消息
 - [ ] 支持删除消息
 - [ ] 应用设置，支持语言、外观切换
 - [ ] 代码块的复制按钮
-- [ ] 支持系统消息
 - [ ] 支持更多聊天场景
 
 ## License
