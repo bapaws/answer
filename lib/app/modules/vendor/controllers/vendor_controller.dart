@@ -91,9 +91,7 @@ class VendorController extends GetxController with AppControllerMixin {
       tokens[index] = token.copyWith(
         value: textEditingControllers[token.id]?.text,
       );
-      await AppDatabase.instance.serviceTokensDao.create(
-        tokens[index],
-      );
+      await ServiceProviderManager.instance.saveToken(tokens[index]);
     }
     vendor?.editApiUrl = apiUrlTextEditingController.text;
 

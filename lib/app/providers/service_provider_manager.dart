@@ -113,6 +113,18 @@ class ServiceProviderManager extends GetxController {
     return tokens.where((element) => element.vendorId == vendorId);
   }
 
+  Future<void> saveToken(ServiceToken token) async {
+    final index = tokens.indexWhere((element) => element.id == token.id);
+    if (index != -1) {
+      tokens[index] = token;
+    } else {
+      tokens.add(token);
+    }
+    await AppDatabase.instance.serviceTokensDao.create(
+      token,
+    );
+  }
+
   Future<void> block(ServiceProvider? provider, bool isBlocked) async {
     if (provider == null) return;
 
