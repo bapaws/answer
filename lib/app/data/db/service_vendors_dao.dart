@@ -29,6 +29,19 @@ class ServiceVendorsDao {
         block INTEGER DEFAULT 0
       );
     ''');
+
+    // format data
+    final string = await rootBundle.loadString(
+      'assets/files/service_vendors.json',
+    );
+    final List list = json.decode(utf8.decode(base64.decode(string)));
+    for (final map in list) {
+      await db.insert(
+        table,
+        map,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
   }
 
   static Future<void> onUpgrade(

@@ -21,6 +21,21 @@ class ServiceTokensDao {
         service_provider_id TEXT
       );
     ''');
+
+    // format data
+    final string = await rootBundle.loadString(
+      'assets/files/service_tokens.json',
+    );
+    final List list = json.decode(utf8.decode(base64.decode(string)));
+    final Batch batch = db.batch();
+    for (final map in list) {
+      batch.insert(
+        table,
+        map,
+        conflictAlgorithm: ConflictAlgorithm.ignore,
+      );
+    }
+    await batch.commit();
   }
 
   static Future<void> onUpgrade(
