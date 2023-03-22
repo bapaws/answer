@@ -41,8 +41,6 @@ class ServiceProviderManager extends GetxController {
     instance.tokens.addAll(
       await AppDatabase.instance.serviceTokensDao.getAll(),
     );
-
-    print(instance.tokens);
   }
 
   Future<void> _updateProvider(ServiceProvider? provider) async {
