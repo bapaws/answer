@@ -27,28 +27,9 @@ class ServiceProviderManager extends GetxController {
     // ),
   ];
 
-  late final vendors = <ServiceVendor>[
-    // ServiceVendor(
-    //   id: 'open_ai_chat_gpt',
-    //   name: 'OpenAI',
-    //   avatar: 'assets/images/open_ai.svg',
-    //   officialUrl: 'https://openai.com/',
-    //   apiUrl: BuildConfig.instance.config.openAIUrl ??
-    //       'https://api.openai.com/v1/chat/completions',
-    //   hello: 'open_ai_hello',
-    //   help: 'chat_gpt_help',
-    //   helpUrl: 'https://www.bapaws.com/answer/help/chat_gpt.html',
-    // ),
-  ];
+  late final vendors = <ServiceVendor>[];
 
-  late final tokens = <ServiceToken>[
-    // ServiceToken(
-    //   id: 'chat_gpt_api_key',
-    //   name: 'API Key',
-    //   value: BuildConfig.instance.config.openAIApiKey ?? '',
-    //   vendorId: 'open_ai_chat_gpt',
-    // ),
-  ];
+  late final tokens = <ServiceToken>[];
 
   static Future<void> initialize() async {
     for (final item in instance.providers) {
