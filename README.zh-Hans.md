@@ -24,7 +24,7 @@
 
 ### 下载
 <a href="https://testflight.apple.com/join/HuwYNikH">
-	<img src="img/testflight.png" alt="" height=40>
+	<img src="img/testflight.png" alt="" height=40 width=40>
 </a>
 <a href="https://itunes.apple.com/app/id6446219556">
 	<img src="img/app-store.svg" alt="">
