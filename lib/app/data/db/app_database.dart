@@ -41,27 +41,25 @@ class AppDatabase {
       path,
       onCreate: instance._onCreate,
       onUpgrade: instance._onUpgrade,
-      version: 5,
+      version: 3,
     );
   }
 
   FutureOr<void> _onCreate(Database db, int version) async {
-    PromptDao.onCreate(db);
-    ServiceTokensDao.onCreate(db);
-    ServiceVendorsDao.onCreate(db);
-    ServiceProvidersDao.onCreate(db);
-    ConversationsDao.onCreate(db);
+    await PromptDao.onCreate(db);
+    await ServiceTokensDao.onCreate(db);
+    await ServiceVendorsDao.onCreate(db);
+    await ServiceProvidersDao.onCreate(db);
+    await ConversationsDao.onCreate(db);
   }
 
-  FutureOr<void> _onUpgrade(Database db, int oldVersion, int newVersion) {
-    ServiceVendorsDao.onCreate(db);
-    ServiceVendorsDao.onUpgrade(db, oldVersion, newVersion);
-
-    PromptDao.onCreate(db);
-    PromptDao.onUpgrade(db, oldVersion, newVersion);
-
-    ServiceProvidersDao.onUpgrade(db, oldVersion, newVersion);
-    MessagesDao.onUpgrade(db, oldVersion, newVersion);
-    ConversationsDao.onUpgrade(db, oldVersion, newVersion);
+  FutureOr<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
+    await ServiceVendorsDao.onCreate(db);
+    await ServiceVendorsDao.onUpgrade(db, oldVersion, newVersion);
+    await PromptDao.onCreate(db);
+    await PromptDao.onUpgrade(db, oldVersion, newVersion);
+    await ServiceProvidersDao.onUpgrade(db, oldVersion, newVersion);
+    await MessagesDao.onUpgrade(db, oldVersion, newVersion);
+    await ConversationsDao.onUpgrade(db, oldVersion, newVersion);
   }
 }
