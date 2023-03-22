@@ -41,7 +41,7 @@ class AppDatabase {
       path,
       onCreate: instance._onCreate,
       onUpgrade: instance._onUpgrade,
-      version: 6,
+      version: 3,
     );
   }
 
