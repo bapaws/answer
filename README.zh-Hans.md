@@ -5,14 +5,24 @@
 </div>
 </br>
 
-<a href="LICENSE" target="_blank">
-    <img alt="GNU General Public License v3.0" src="https://img.shields.io/badge/license-GPL-blue?style=flat-square" />
+<a href="https://github.com/bapaws/answer/blob/main/LICENSE">
+    <img alt="Tests Passing" src="https://img.shields.io/github/license/bapaws/answer" />
+</a>
+<a href="https://github.com/bapaws/answer/graphs/contributors">
+    <img alt="GitHub Contributors" src="https://img.shields.io/github/contributors/bapaws/answer" />
+</a>
+<a href="https://github.com/bapaws/answer/issues">
+    <img alt="Issues" src="https://img.shields.io/github/issues/bapaws/answer" />
+</a>
+<a href="https://github.com/bapaws/answer/pulls">
+    <img alt="GitHub pull requests" src="https://img.shields.io/github/issues-pr/bapaws/answer" />
 </a>
 
-小答是一款基于 ChatGPT 的开源客户端，由最新的 GPT-3.5-turbo AI 模型驱动。
+小答是一款基于 ChatGPT API 的开源客户端。
 
 ## iOS App
 
+### 下载
 <a href="https://testflight.apple.com/join/HuwYNikH">
 	<img src="img/testflight.png" alt="" height=40>
 </a>
@@ -20,14 +30,23 @@
 	<img src="img/app-store.svg" alt="">
 </a>
 
-![ios-screen-dark](img/ios-screen-dark.png)![ios-screen-light](img/ios-screen-light.png)
+### 预览
+![ios-screen-dark](img/ios-screen-dark.png)
+![ios-screen-light](img/ios-screen-light.png)
 
 ## Android App
 
+### 下载
+#### Google Play
 <a href="https://play.google.com/store/apps/details?id=com.bapaws.answer">
 	<img src="img/google-play-badge.png" alt="" height=80>
 </a>
 
+#### GitHub
+1. 点击 <a href="https://github.com/bapaws/answer/releases/latest">GitHub Latest Release</a>
+2. 点击页面中的 "app-release.apk" 开始下载。
+
+### 预览
 ![android-screen-dark](img/android-screen-dark.png)![android-screen-light](img/android-screen-light.png)
 
 ## Roadmap
