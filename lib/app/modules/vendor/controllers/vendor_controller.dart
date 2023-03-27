@@ -1,4 +1,5 @@
 import 'package:answer/app/core/app/app_controller_mixin.dart';
+import 'package:answer/app/data/models/request_parameter.dart';
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,11 +16,14 @@ class VendorController extends GetxController with AppControllerMixin {
   ServiceVendor? vendor;
 
   List<ServiceToken> tokens = [];
+  final parameters = <RequestParameter>[];
 
   final apiUrlFocusNode = FocusNode();
   final apiUrlTextEditingController = TextEditingController();
-  final Map<String, TextEditingController> textEditingControllers = {};
+  final Map<String, TextEditingController> tokenControllers = {};
   final Map<String, FocusNode> focusNodes = {};
+
+  final Map<String, TextEditingController> parameterControllers = {};
 
   static const obscureText = '••••••';
 
@@ -33,18 +37,28 @@ class VendorController extends GetxController with AppControllerMixin {
     tokens.addAll(ServiceProviderManager.instance.getTokens(
       vendorId: vendor!.id,
     ));
+    parameters.addAll(ServiceProviderManager.instance.getParameters(
+      vendorId: vendor!.id,
+    ));
     if (vendor?.url != null) {
       apiUrlTextEditingController.text = vendor!.url!;
     }
     for (final item in tokens) {
-      textEditingControllers[item.id] = TextEditingController(
+      tokenControllers[item.id] = TextEditingController(
         text: item.value.isNotEmpty ? obscureText : '',
       );
       focusNodes[item.id] = FocusNode();
     }
     final first = tokens.firstOrNull;
     if (first?.value.isEmpty == true) {
+      editing = true;
       focusNodes[first!.id]?.requestFocus();
+    }
+
+    for (final item in parameters) {
+      parameterControllers[item.key!] = TextEditingController(
+        text: item.value,
+      );
     }
     update();
 
@@ -60,13 +74,13 @@ class VendorController extends GetxController with AppControllerMixin {
   }
 
   bool isObscure(ServiceToken token) =>
-      textEditingControllers[token.id]?.text == obscureText;
+      tokenControllers[token.id]?.text == obscureText;
 
   void onObscured(ServiceToken token) {
     if (isObscure(token) || editing) {
-      textEditingControllers[token.id]?.text = token.value;
+      tokenControllers[token.id]?.text = token.value;
     } else {
-      textEditingControllers[token.id]?.text = '••••••';
+      tokenControllers[token.id]?.text = '••••••';
     }
     update();
   }
@@ -74,7 +88,7 @@ class VendorController extends GetxController with AppControllerMixin {
   void onEdited() {
     editing = true;
     for (final token in tokens) {
-      textEditingControllers[token.id]?.text = token.value;
+      tokenControllers[token.id]?.text = token.value;
     }
     update();
     // delay is working
@@ -88,11 +102,24 @@ class VendorController extends GetxController with AppControllerMixin {
 
     for (int index = 0; index < tokens.length; index++) {
       final token = tokens[index];
-      tokens[index] = token.copyWith(
-        value: textEditingControllers[token.id]?.text,
-      );
-      await ServiceProviderManager.instance.saveToken(tokens[index]);
+      if (token.value != tokenControllers[token.id]?.text) {
+        tokens[index] = token.copyWith(
+          value: tokenControllers[token.id]?.text,
+        );
+        await ServiceProviderManager.instance.saveToken(tokens[index]);
+      }
     }
+
+    for (int index = 0; index < parameters.length; index++) {
+      final parameter = parameters[index];
+      if (parameter.value != parameterControllers[parameter.key]?.text) {
+        parameters[index] = parameter.copyWith(
+          value: parameterControllers[parameter.key]?.text,
+        );
+        await ServiceProviderManager.instance.saveParameter(parameters[index]);
+      }
+    }
+
     vendor?.editApiUrl = apiUrlTextEditingController.text;
 
     editing = false;

@@ -14,64 +14,62 @@ import 'dart:convert';
 
 enum ServiceParameterValueType { integer, string, choices, boolean }
 
-class ServiceParameter {
-  ServiceParameter({
+class RequestParameter {
+  RequestParameter({
     this.key,
     this.value,
     this.valueType = ServiceParameterValueType.string,
-    this.choices,
     this.desc,
     this.required = false,
+    this.vendorId,
   });
 
   final String? key;
   final String? value;
   final ServiceParameterValueType valueType;
-  final List<String>? choices;
   final String? desc;
   final bool? required;
+  final String? vendorId;
 
-  ServiceParameter copyWith({
+  RequestParameter copyWith({
     String? key,
     String? value,
     ServiceParameterValueType? valueType,
     List<String>? choices,
     String? desc,
     bool? required,
+    String? vendorId,
   }) =>
-      ServiceParameter(
+      RequestParameter(
         key: key ?? this.key,
         value: value ?? this.value,
         valueType: valueType ?? this.valueType,
-        choices: choices ?? this.choices,
         desc: desc ?? this.desc,
         required: required ?? this.required,
+        vendorId: vendorId ?? this.vendorId,
       );
 
-  factory ServiceParameter.fromRawJson(String str) =>
-      ServiceParameter.fromJson(json.decode(str));
+  factory RequestParameter.fromRawJson(String str) =>
+      RequestParameter.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory ServiceParameter.fromJson(Map<String, dynamic> json) =>
-      ServiceParameter(
+  factory RequestParameter.fromJson(Map<String, dynamic> json) =>
+      RequestParameter(
         key: json["key"],
         value: json["value"],
         valueType: ServiceParameterValueType.values[json["value_type"] ?? 0],
-        choices: json["choices"] == null
-            ? []
-            : List<String>.from(json["choices"]!.map((x) => x)),
         desc: json["desc"],
-        required: json["required"],
+        required: json["required"] == 1,
+        vendorId: json["vendor_id"],
       );
 
   Map<String, dynamic> toJson() => {
         "key": key,
         "value": value,
         "value_type": valueType.index,
-        "choices":
-            choices == null ? [] : List<dynamic>.from(choices!.map((x) => x)),
         "desc": desc,
-        "required": required,
+        "required": required == true ? 1 : 0,
+        "vendor_id": vendorId,
       };
 }

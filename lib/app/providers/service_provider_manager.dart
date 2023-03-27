@@ -1,5 +1,6 @@
 import 'package:answer/app/data/models/conversation.dart';
 import 'package:answer/app/data/models/group.dart';
+import 'package:answer/app/data/models/request_parameter.dart';
 import 'package:answer/app/modules/home/controllers/home_controller.dart';
 import 'package:answer/app/providers/open_ai/chat_gpt_3.dart';
 import 'package:answer/app/providers/service_provider.dart';
@@ -30,6 +31,7 @@ class ServiceProviderManager extends GetxController {
   late final vendors = <ServiceVendor>[];
 
   late final tokens = <ServiceToken>[];
+  late final parameters = <RequestParameter>[];
 
   static Future<void> initialize() async {
     for (final item in instance.providers) {
@@ -40,6 +42,9 @@ class ServiceProviderManager extends GetxController {
     );
     instance.tokens.addAll(
       await AppDatabase.instance.serviceTokensDao.getAll(),
+    );
+    instance.parameters.addAll(
+      await AppDatabase.instance.requestParametersDao.getAll(),
     );
   }
 
@@ -90,6 +95,26 @@ class ServiceProviderManager extends GetxController {
     }
     await AppDatabase.instance.serviceTokensDao.create(
       token,
+    );
+  }
+
+  Iterable<RequestParameter> getParameters({required String vendorId}) {
+    return parameters.where((element) => element.vendorId == vendorId);
+  }
+
+  Future<void> saveParameter(RequestParameter parameter) async {
+    final index = parameters.indexWhere(
+      (element) =>
+          element.key == parameter.key &&
+          element.vendorId == parameter.vendorId,
+    );
+    if (index != -1) {
+      parameters[index] = parameter;
+    } else {
+      parameters.add(parameter);
+    }
+    await AppDatabase.instance.requestParametersDao.create(
+      parameter,
     );
   }
 

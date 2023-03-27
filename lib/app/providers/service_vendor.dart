@@ -71,7 +71,7 @@ class ServiceVendor {
   Map<String, dynamic> toJson() => {
         "id": id,
         "name": name,
-    "avatar": avatar,
+        "avatar": avatar,
         "official_url": officialUrl,
         "api_url": apiUrl,
         "hello": hello,

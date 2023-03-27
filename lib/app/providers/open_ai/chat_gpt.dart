@@ -6,6 +6,7 @@ import 'package:answer/app/data/models/message.dart';
 import 'package:answer/app/providers/open_ai/chat_gpt_model.dart';
 import 'package:answer/app/providers/service_provider.dart';
 import 'package:answer/app/providers/service_provider_manager.dart';
+import 'package:answer/flavors/build_config.dart';
 import 'package:dio/dio.dart';
 
 import '../../data/models/conversation.dart';
@@ -48,8 +49,15 @@ class ChatGpt extends ServiceProvider {
         message,
       );
 
+      final bearer = BuildConfig.instance.config.openAIApiKey ??
+          ServiceProviderManager.instance
+              .getTokens(
+                vendorId: vendorId,
+              )
+              .first
+              .value;
       final response = await AppHttp.post(
-        vendor.url!,
+        BuildConfig.instance.config.openAIUrl ?? vendor.url!,
         data: {
           'model': model,
           'max_tokens': conversation.maxTokens,
@@ -60,10 +68,7 @@ class ChatGpt extends ServiceProvider {
           receiveTimeout: Duration(seconds: conversation.timeout),
           headers: {
             'Content-Type': 'application/json',
-            'Authorization':
-                'Bearer ${ServiceProviderManager.instance.getTokens(
-                      vendorId: vendorId,
-                    ).first.value}',
+            'Authorization': 'Bearer ${bearer}',
           },
         ),
       );

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:answer/app/data/db/prompt_dao.dart';
+import 'package:answer/app/data/db/request_parameters_dao.dart';
 import 'package:answer/app/data/db/service_providers_dao.dart';
 import 'package:answer/app/data/db/service_tokens_dao.dart';
 import 'package:answer/app/data/db/service_vendors_dao.dart';
@@ -26,6 +27,8 @@ class AppDatabase {
   late final ServiceVendorsDao serviceVendorsDao = ServiceVendorsDao(database);
   late final ServiceTokensDao serviceTokensDao = ServiceTokensDao(database);
   late final PromptDao promptDao = PromptDao(database);
+  late final RequestParametersDao requestParametersDao =
+      RequestParametersDao(database);
 
   static Future<void> initialize({
     required String dbName,
@@ -41,7 +44,7 @@ class AppDatabase {
       path,
       onCreate: instance._onCreate,
       onUpgrade: instance._onUpgrade,
-      version: 3,
+      version: 4,
     );
   }
 
@@ -51,12 +54,18 @@ class AppDatabase {
     await ServiceVendorsDao.onCreate(db);
     await ServiceProvidersDao.onCreate(db);
     await ConversationsDao.onCreate(db);
+    await RequestParametersDao.onCreate(db);
   }
 
   FutureOr<void> _onUpgrade(Database db, int oldVersion, int newVersion) async {
     if (oldVersion < 3) {
       await ServiceVendorsDao.onCreate(db);
       await PromptDao.onCreate(db);
+    }
+    if (oldVersion < 4) {
+      await RequestParametersDao.onCreate(db);
+    } else {
+      await RequestParametersDao.onUpgrade(db, oldVersion, newVersion);
     }
     await ServiceTokensDao.onUpgrade(db, oldVersion, newVersion);
     await ServiceVendorsDao.onUpgrade(db, oldVersion, newVersion);

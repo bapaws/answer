@@ -104,13 +104,26 @@ class VendorView extends StatelessWidget with AppViewMixin<VendorController> {
         for (final item in controller.tokens)
           ServiceTokenItemView(
             item: item,
-            textEditingController: controller.textEditingControllers[item.id]!,
+            textEditingController: controller.tokenControllers[item.id]!,
             focusNode: controller.focusNodes[item.id]!,
             onObscured: () {
               controller.onObscured(item);
             },
             enabled: controller.editing,
             obscured: controller.isObscure(item),
+            textInputAction: TextInputAction.next,
+          ),
+        const SizedBox(
+          height: 8,
+        ),
+        for (final item in controller.parameters)
+          AppCell.textFieldTile(
+            title: SizedBox(
+              width: 80,
+              child: Text(item.key?.tr ?? ''),
+            ),
+            enabled: controller.editing,
+            controller: controller.parameterControllers[item.key]!,
             textInputAction: TextInputAction.next,
           ),
         const SizedBox(

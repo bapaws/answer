@@ -72,25 +72,6 @@ class ConversationView extends StatelessWidget
           maxHeight: 54,
           onToggle: controller.onQuoted,
         ),
-        AppCell.textFieldTile(
-          title: SizedBox(
-            width: 120,
-            child: Text('max_tokens'.tr),
-          ),
-          enabled: controller.editing,
-          controller: controller.maxTokensTextEditing,
-          textInputAction: TextInputAction.next,
-        ),
-        AppCell.textFieldTile(
-          title: SizedBox(
-            width: 120,
-            child: Text('timeout'.tr),
-          ),
-          enabled: controller.editing,
-          controller: controller.timeoutTextEditing,
-          hiddenDivider: true,
-          textInputAction: TextInputAction.next,
-        ),
         const SizedBox(
           height: 16,
         ),
