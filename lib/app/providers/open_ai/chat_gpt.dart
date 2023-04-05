@@ -68,7 +68,7 @@ class ChatGpt extends ServiceProvider {
           receiveTimeout: Duration(seconds: conversation.timeout),
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': 'Bearer ${bearer}',
+            'Authorization': 'Bearer $bearer',
           },
         ),
       );
