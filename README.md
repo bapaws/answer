@@ -62,9 +62,12 @@ Chat Answer is an open source app based on ChatGPT API.
 - [x] Support add prompts
 - [x] Support system message
 - [ ] Support delete message
-- [ ] App settings
+- [ ] Add App level settings
 - [ ] Support for code replication
 - [ ] Support more chat scenarios
+- [ ] Support chat stream output
+- [ ] Add App level prompts manager
+- [ ] Add prompts quick send button on chat page
 
 ## License
 
