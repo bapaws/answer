@@ -103,7 +103,7 @@ abstract class ChatBaseItemView extends StatelessWidget {
                       onPressed: () async {
                         await Clipboard.setData(
                           ClipboardData(
-                            text: message.content,
+                            text: message.content ?? "",
                           ),
                         );
                         AppToast.show(msg: 'copied'.tr);
